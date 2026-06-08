@@ -1,0 +1,204 @@
+---
+import ProductRatingStars from './ProductRatingStars.astro';
+import { productAggregateRating } from '../lib/productAggregateRating';
+import { formatProductUpdatedAt } from '../lib/formatProductUpdatedAt';
+import { productDetailHref } from '../lib/productDetailRoutes';
+import { spreadsheetCatalogProductAlt } from '../lib/spreadsheetImageAlt';
+import type { CatalogProduct } from '../lib/catalogProducts';
+
+type CategoryCatalogProduct = CatalogProduct & {
+  slug: string;
+  title: string;
+  brand: string;
+  priceUsdEstimate: [number, number];
+  images: string[];
+  qcPhotoCount: number;
+  updatedAt?: string;
+};
+
+interface Props {
+  locale: string;
+  uiCategorySlug: string;
+  uiName: string;
+  products: CategoryCatalogProduct[];
+}
+
+const { locale, uiCategorySlug, uiName, products } = Astro.props;
+---
+
+<div class="products-grid">
+  {
+    products.map((p) => {
+      const rating = productAggregateRating(p.slug);
+      const updatedLabel = formatProductUpdatedAt(p.updatedAt);
+
+      return (
+        <a
+          href={productDetailHref(locale, uiCategorySlug, p.slug)}
+          class="product-card"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="img-container">
+            <img
+              src={p.images[0]}
+              alt={spreadsheetCatalogProductAlt(p.title, uiName)}
+              loading="lazy"
+              decoding="async"
+              width="300"
+              height="300"
+            />
+            {p.qcPhotoCount > 0 && <span class="qc-badge">+{p.qcPhotoCount} QC</span>}
+          </div>
+          <div class="card-info">
+            <span class="brand-name">{p.brand}</span>
+            <h3 class="prod-title">{p.title}</h3>
+            <ProductRatingStars
+              class="card-rating"
+              ratingValue={rating.ratingValue}
+              reviewCount={rating.reviewCount}
+            />
+            {updatedLabel && <p class="card-updated">Updated {updatedLabel}</p>}
+            <div class="card-footer">
+              <span class="price">$ {p.priceUsdEstimate[0].toFixed(2)}</span>
+              <span class="featured-tag">★ FEATURED</span>
+            </div>
+          </div>
+        </a>
+      );
+    })
+  }
+</div>
+
+<style>
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border-radius: 0.85rem;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 24px rgba(255, 30, 111, 0.08);
+  }
+
+  .img-container {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .qc-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--accent-dark);
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  .card-info {
+    padding: 1.15rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  .prod-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    margin: 0 0 0.55rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-info :global(.card-rating) {
+    margin-bottom: 0.35rem;
+  }
+
+  .card-info :global(.card-rating .product-rating__stars) {
+    font-size: 0.82rem;
+  }
+
+  .card-info :global(.card-rating .product-rating__value) {
+    font-size: 0.78rem;
+  }
+
+  .card-info :global(.card-rating .product-rating__count) {
+    font-size: 0.72rem;
+  }
+
+  .card-updated {
+    margin: 0 0 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  .price {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+
+  .featured-tag {
+    font-size: 0.625rem;
+    font-weight: 800;
+    color: #eab308;
+    background: #fefce8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #fef08a;
+  }
+
+  @media (max-width: 640px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+  }
+</style>

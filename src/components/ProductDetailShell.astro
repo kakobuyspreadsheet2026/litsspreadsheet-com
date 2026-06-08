@@ -1,0 +1,865 @@
+---
+import { absoluteCanonicalUrl } from '../lib/canonicalPath';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+import { litbuyCheckoutUrl, siteDomain } from '../consts';
+import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { marketplacePlatformName } from '../lib/productSourceUrl';
+import { productDetailHref } from '../lib/productDetailRoutes';
+import {
+  spreadsheetProductDetailAlt,
+  spreadsheetRelatedProductAlt,
+} from '../lib/spreadsheetImageAlt';
+import { formatProductUpdatedAt } from '../lib/formatProductUpdatedAt';
+import { productAggregateRating } from '../lib/productAggregateRating';
+import { productSchemaIdentifiers } from '../lib/productSchemaIdentifiers';
+import ProductRatingStars from './ProductRatingStars.astro';
+import { isSizeRelevantCategory } from '../lib/productSizes';
+
+export type ProductDetailRecord = {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  brand: string;
+  priceCny?: string;
+  priceUsdEstimate: [number, number];
+  images: string[];
+  qcPhotoCount: number;
+  updatedAt?: string;
+};
+
+interface Props {
+  product: ProductDetailRecord;
+  sourceUrl: string;
+  availableSizes?: string[];
+  relatedProducts?: ProductDetailRecord[];
+  uiCategorySlug: string;
+  productUiCategoryIndex?: Record<string, string>;
+  canonicalPath: string;
+  noindex?: boolean;
+}
+
+const {
+  product: p,
+  sourceUrl,
+  availableSizes = [],
+  relatedProducts = [],
+  uiCategorySlug,
+  productUiCategoryIndex = {},
+  canonicalPath,
+  noindex = false,
+} = Astro.props;
+
+const locale = 'en';
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+const targetPasteUrl = productDetailHref(locale, uiCategorySlug, p.slug);
+const platformName = marketplacePlatformName(sourceUrl);
+const categoryUiLabel =
+  uiCategorySlug.charAt(0).toUpperCase() + uiCategorySlug.slice(1).replace('-', ' ');
+const productDescription = p.description?.trim() ?? '';
+const lastUpdatedLabel = formatProductUpdatedAt(p.updatedAt);
+const aggregateRating = productAggregateRating(p.slug);
+const showSizingGuide = isSizeRelevantCategory(uiCategorySlug);
+const { sku, mpn } = productSchemaIdentifiers(p.slug);
+const mainImageUrl = p.images[0];
+
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  '@id': `${pageUrl}#product`,
+  name: p.title,
+  url: pageUrl,
+  sku,
+  mpn,
+  image: mainImageUrl,
+  description: p.description,
+  brand: {
+    '@type': 'Brand',
+    name: p.brand,
+  },
+  offers: {
+    '@type': 'Offer',
+    price: p.priceUsdEstimate[0],
+    priceCurrency: 'USD',
+    url: targetPasteUrl,
+    itemCondition: 'https://schema.org/NewCondition',
+    availability: 'https://schema.org/InStock',
+    priceValidUntil: '2026-12-31',
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: {
+        '@type': 'MonetaryAmount',
+        value: '5.00',
+        currency: 'USD',
+      },
+      shippingDestination: {
+        '@type': 'DefinedRegion',
+        addressCountry: 'US',
+      },
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        handlingTime: {
+          '@type': 'QuantitativeValue',
+          minValue: 1,
+          maxValue: 3,
+          unitCode: 'd',
+        },
+        transitTime: {
+          '@type': 'QuantitativeValue',
+          minValue: 7,
+          maxValue: 15,
+          unitCode: 'd',
+        },
+      },
+    },
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: 'US',
+      returnPolicyCategory: 'MerchantReturnFiniteReturnPeriod',
+      merchantReturnDays: 7,
+      returnMethod: 'ReturnByMail',
+      returnFees: 'FreeReturn',
+    },
+  },
+  ...(p.updatedAt ? { dateModified: p.updatedAt } : {}),
+};
+---
+
+<Layout
+  title={`LitBuy Spreadsheet: ${p.brand} ${p.title} — QC & Link`}
+  description={`Find direct LitBuy buying link for ${p.brand} ${p.title}. Check estimated price $${p.priceUsdEstimate[0].toFixed(2)} and warehouse QC status on our updated 2026 spreadsheet.`}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  hreflangLocales={['en']}
+  hreflangMirrorsCanonical
+  lcpPreloadImages={[mainImageUrl]}
+  jsonLd={productLd}
+  noindex={noindex}
+>
+  <SiteHeader locale={locale} />
+
+  <main class="product-detail-page">
+    <div class="wrap">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href={getRelativeLocaleUrl(locale, '')}>Home</a> /
+        <a href={`${getRelativeLocaleUrl(locale, 'how-to-buy/')}#spreadsheet-guide`}>Spreadsheet</a> /
+        <a href={litrepstarCategoryUrl(uiCategorySlug)} target="_blank" rel="noopener noreferrer">
+          {categoryUiLabel}
+        </a> /
+        <span>{p.title}</span>
+      </nav>
+
+      <div class="product-container">
+        <div class="product-gallery">
+          <div class="main-image-wrapper">
+            <img
+              src={mainImageUrl}
+              alt={spreadsheetProductDetailAlt(p.brand, p.title)}
+              class="main-img"
+              width="800"
+              height="800"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+            {p.qcPhotoCount > 0 && (
+              <span class="qc-badge">+{p.qcPhotoCount} Real QC Photos</span>
+            )}
+          </div>
+          <p class="gallery-caption">Verified actual listing photography</p>
+
+          {(availableSizes.length > 0) && (
+            <div class="product-gallery-details">
+              <section class="product-sizes" aria-labelledby="product-sizes-heading">
+                <h2 id="product-sizes-heading" class="product-sizes-title">Available sizes</h2>
+                <p class="product-sizes-note">
+                  Seller-reported options from the listing — pick the matching variant when you paste into LitBuy.
+                </p>
+                <ul class="size-pill-list">
+                  {availableSizes.map((size) => (
+                    <li>
+                      <span class="size-pill">{size}</span>
+                    </li>
+                  ))}
+                </ul>
+                {showSizingGuide && (
+                  <p class="product-sizes-help">
+                    Need cm / EU conversion help? See our{' '}
+                    <a href="/how-to-buy/">Spreadsheet sizing guide</a>.
+                  </p>
+                )}
+              </section>
+            </div>
+          )}
+        </div>
+
+        <div class="product-info-panel">
+          <div class="brand-badge-wrap">
+            <span class="brand-tag">{p.brand}</span>
+            <span class="status-indicator">
+              <span class="status-dot"></span> Link Active
+            </span>
+          </div>
+
+          <h1 class="product-title">{p.title}</h1>
+          <p class="product-kicker">LitBuy Spreadsheet · 2026 · {categoryUiLabel}</p>
+
+          <ProductRatingStars
+            ratingValue={aggregateRating.ratingValue}
+            reviewCount={aggregateRating.reviewCount}
+          />
+
+          <div class="price-section">
+            <div class="price-usd">$ {p.priceUsdEstimate[0].toFixed(2)}</div>
+            <div class="price-cny">≈ ¥ {p.priceCny || (p.priceUsdEstimate[0] * 7.2).toFixed(2)} CNY</div>
+          </div>
+
+          {productDescription && (
+            <section class="product-description" aria-labelledby="product-description-heading">
+              <h2 id="product-description-heading" class="product-description-title">About This Find</h2>
+              <p class="product-description-text">{productDescription}</p>
+            </section>
+          )}
+
+          <div class="specs-card">
+            <h2 class="specs-card-title">Spreadsheet Row Metadata (2026)</h2>
+            <div class="specs-grid">
+              <div class="spec-row">
+                <span class="spec-label">Item Category</span>
+                <span class="spec-value">{categoryUiLabel}</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Recomm. Batch</span>
+                <span class="spec-value highlight">Community Vetted</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">QC Availability</span>
+                <span class="spec-value">{p.qcPhotoCount > 0 ? `${p.qcPhotoCount} Photos Captured` : 'Standard Inspection'}</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Last Updated</span>
+                <span class="spec-value">{lastUpdatedLabel ?? 'Pending sync'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <div class="copy-flow-card">
+              <p class="copy-instructions">Copy this {platformName} link to purchase on LitBuy:</p>
+              <div class="copy-input-group">
+                <input type="text" readonly value={sourceUrl} class="copy-input-field" id="target-link-input" />
+                <button class="btn btn-primary btn-copy" id="copy-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  <span id="copy-btn-text">Copy {platformName} Link</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="dual-ctas">
+              <a href={litbuyCheckoutUrl} target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-agent-gate">
+                Open LitBuy Platform ↗
+              </a>
+              <a href={targetPasteUrl} target="_blank" rel="nofollow sponsored" class="btn btn-primary btn-try-on">
+                Buy Now 🛍️
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {relatedProducts.length > 0 && (
+        <section class="related-section">
+          <h2 class="related-title">You May Also Like — Related {categoryUiLabel} Finds</h2>
+          <div class="related-grid">
+            {relatedProducts.map((rp) => {
+              const relatedCategory = productUiCategoryIndex[rp.slug] ?? uiCategorySlug;
+              return (
+              <a href={productDetailHref(locale, relatedCategory, rp.slug)} class="related-card">
+                <div class="related-img-wrapper">
+                  <img
+                    src={rp.images[0]}
+                    alt={spreadsheetRelatedProductAlt(rp.brand, rp.title, categoryUiLabel)}
+                    class="related-img"
+                    loading="lazy"
+                    decoding="async"
+                    width="300"
+                    height="300"
+                  />
+                  {rp.qcPhotoCount > 0 && (
+                    <span class="related-qc-badge">+{rp.qcPhotoCount} QC</span>
+                  )}
+                </div>
+                <div class="related-card-info">
+                  <span class="related-brand">{rp.brand}</span>
+                  <h3 class="related-prod-title">{rp.title}</h3>
+                  <div class="related-card-footer">
+                    <span class="related-price">$ {rp.priceUsdEstimate[0].toFixed(2)}</span>
+                    <span class="related-featured">★ FEATURED</span>
+                  </div>
+                </div>
+              </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  </main>
+
+  <SiteFooter
+    locale={locale}
+    disclaimerTitle="Disclaimer"
+    disclaimerHtml={`${siteDomain} is an independent editorial directory. Carts and payments are processed exclusively on litbuy.com.`}
+    copyrightLine={`© 2026 ${siteDomain} · Independent spreadsheet index.`}
+  />
+</Layout>
+
+<script is:inline define:vars={{ platformName }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const copyBtn = document.getElementById('copy-btn');
+    const copyInput = document.getElementById('target-link-input');
+    const copyBtnText = document.getElementById('copy-btn-text');
+
+    if (copyBtn && copyInput && copyBtnText) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(copyInput.value);
+          copyBtnText.textContent = 'Copied!';
+          copyBtn.style.background = '#10b981';
+          copyBtn.style.borderColor = '#10b981';
+          setTimeout(() => {
+            copyBtnText.textContent = `Copy ${platformName} Link`;
+            copyBtn.style.background = '';
+            copyBtn.style.borderColor = '';
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy text: ', err);
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .product-detail-page {
+    padding: 2.5rem 0 5rem;
+    background: var(--bg);
+  }
+
+  .breadcrumb {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--accent-dark);
+  }
+
+  .product-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .product-container {
+      grid-template-columns: minmax(300px, 1.1fr) 1.2fr;
+      gap: 3.5rem;
+    }
+  }
+
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-gallery-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1.25rem;
+  }
+
+  .main-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  }
+
+  .main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .qc-badge {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--accent-dark);
+    color: #fff;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(233, 19, 98, 0.25);
+  }
+
+  .gallery-caption {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .product-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .brand-badge-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .brand-tag {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--accent-dark);
+    background: var(--accent-soft);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #10b981;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+  }
+
+  .product-title {
+    font-size: clamp(1.35rem, 3.5vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .product-kicker {
+    margin: -0.5rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .price-section {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .price-usd {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .price-cny {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .product-sizes {
+    margin-top: 0;
+    padding: 1rem 1.05rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .product-sizes-title {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .product-sizes-note {
+    margin: 0 0 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .size-pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .size-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 0.38rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  .product-sizes-help {
+    margin: 0.75rem 0 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .product-sizes-help a {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .product-sizes-help a:hover {
+    text-decoration: underline;
+  }
+
+  .product-description {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .product-description-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin: 0 0 0.65rem;
+  }
+
+  .product-description-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .specs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  }
+
+  .specs-card-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin: 0 0 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+
+  .specs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+  }
+
+  .spec-label {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .spec-value {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .spec-value.highlight {
+    color: var(--accent-dark);
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .copy-flow-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    padding: 1.15rem;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+  }
+
+  .copy-instructions {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.65rem;
+  }
+
+  .copy-input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .copy-input-field {
+    flex-grow: 1;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-family: monospace;
+    background: var(--bg);
+    color: var(--muted);
+    outline: none;
+  }
+
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 1.25rem;
+    min-height: 2.5rem;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  .copy-icon {
+    flex-shrink: 0;
+  }
+
+  .dual-ctas {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn-agent-gate, .btn-try-on {
+    flex: 1;
+    min-height: 3rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .btn-agent-gate {
+    background: #fff;
+    border: 2px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-agent-gate:hover {
+    background: var(--bg);
+    border-color: #d1d5db;
+  }
+
+  .btn-try-on {
+    background: var(--accent-dark);
+    border: 2px solid var(--accent-dark);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(233, 19, 98, 0.15);
+  }
+
+  .btn-try-on:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(233, 19, 98, 0.22);
+  }
+
+  .related-section {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    padding-top: 3rem;
+  }
+
+  .related-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .related-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  .related-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .related-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 20px rgba(255, 30, 111, 0.05);
+  }
+
+  .related-img-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .related-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .related-card:hover .related-img {
+    transform: scale(1.03);
+  }
+
+  .related-qc-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--accent-dark);
+    color: #fff;
+    padding: 0.15rem 0.42rem;
+    border-radius: 0.35rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  .related-card-info {
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .related-brand {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .related-prod-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    margin: 0 0 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .related-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+    margin-top: auto;
+  }
+
+  .related-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .related-featured {
+    font-size: 0.55rem;
+    font-weight: 800;
+    color: #eab308;
+    background: #fefce8;
+    padding: 0.15rem 0.35rem;
+    border-radius: 3px;
+    border: 1px solid #fef08a;
+  }
+</style>

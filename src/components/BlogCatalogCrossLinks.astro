@@ -1,0 +1,131 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import {
+  BLOG_HUB_LINK_LABELS,
+  getBlogHubLinkHash,
+  getBlogHubLinkKind,
+  getBlogHubLinkSegment,
+} from '../lib/blogCatalogCrossLinkMap';
+import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
+import { getSpreadsheetBrowseCategories } from '../lib/spreadsheetCatalogLinks';
+
+interface Props {
+  locale?: string;
+  canonicalPath: string;
+  categories: string[];
+  title?: string;
+}
+
+const {
+  locale = 'en',
+  canonicalPath,
+  categories: categorySlugs,
+  title = 'Browse related LitBuy Spreadsheet picks',
+} = Astro.props;
+
+const lanes = getSpreadsheetBrowseCategories().filter((cat) =>
+  categorySlugs.includes(cat.slug),
+);
+
+const hubKind = getBlogHubLinkKind(canonicalPath);
+const homeHref = getRelativeLocaleUrl(locale, '');
+const howToBuyHref = getRelativeLocaleUrl(locale, 'how-to-buy/');
+const primaryHubHref = `${getRelativeLocaleUrl(locale, getBlogHubLinkSegment(hubKind))}${getBlogHubLinkHash(hubKind)}`;
+const primaryHubLabel = BLOG_HUB_LINK_LABELS[hubKind];
+---
+
+{
+  lanes.length > 0 && (
+    <aside class="blog-catalog-links" aria-labelledby="blog-catalog-links-heading">
+      <h2 id="blog-catalog-links-heading" class="blog-catalog-links__title">{title}</h2>
+      <ul class="blog-catalog-links__list">
+        {lanes.map((cat) => (
+          <li class="blog-catalog-links__item">
+            <a
+              href={litrepstarCategoryUrl(cat.slug)}
+              class="blog-catalog-links__cat"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {cat.label} on Litrepstar ({cat.productCount} picks)
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="blog-catalog-links__foot">
+        {
+          hubKind === 'home' ? (
+            <>
+              Browse{' '}
+              <a href={primaryHubHref}>{primaryHubLabel}</a>
+              {' · '}
+              <a href={howToBuyHref}>How to buy</a>
+            </>
+          ) : (
+            <>
+              Next step:{' '}
+              <a href={primaryHubHref}>{primaryHubLabel}</a>
+              {' · '}
+              <a href={homeHref}>LitBuy Spreadsheet home</a>
+            </>
+          )
+        }
+      </p>
+    </aside>
+  )
+}
+
+<style>
+  .blog-catalog-links {
+    margin: 2rem 0 0;
+    padding: 1.1rem 1.2rem;
+    border-radius: 0.55rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .blog-catalog-links__title {
+    margin: 0 0 0.65rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .blog-catalog-links__list {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .blog-catalog-links__item {
+    margin-bottom: 0.35rem;
+  }
+
+  .blog-catalog-links__cat {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .blog-catalog-links__cat:hover {
+    text-decoration: underline;
+  }
+
+  .blog-catalog-links__foot {
+    margin: 0.85rem 0 0;
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+
+  .blog-catalog-links__foot a {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .blog-catalog-links__foot a:hover {
+    text-decoration: underline;
+  }
+</style>

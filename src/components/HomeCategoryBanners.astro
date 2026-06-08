@@ -1,0 +1,224 @@
+---
+export interface HomeCategoryBanner {
+  src: string;
+  alt: string;
+  /** Omit or leave empty for a non-clickable banner (no navigation). */
+  href?: string;
+}
+
+interface Props {
+  banners: HomeCategoryBanner[];
+}
+
+const { banners } = Astro.props;
+
+function isOutboundUrl(href: string) {
+  return /^https?:\/\//i.test(href.trim());
+}
+
+function hasNavHref(href: string | undefined) {
+  return typeof href === 'string' && href.trim().length > 0 && href.trim() !== '#';
+}
+
+const navPrevLabel = 'Previous banners';
+const navNextLabel = 'Next banners';
+---
+
+<div
+  class="home-category-banners-shell"
+  data-home-category-banners
+  aria-label="Featured LitBuy banners carousel"
+>
+  <button
+    type="button"
+    class="home-category-banners__btn home-category-banners__btn--prev"
+    data-banner-prev
+    aria-label={navPrevLabel}
+    disabled
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"
+      ><path fill="currentColor" d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"
+      ></path></svg
+    >
+  </button>
+  <div
+    class="home-category-banners__viewport"
+    data-banner-viewport
+    tabindex="0"
+    aria-roledescription="carousel"
+    aria-label="Swipe or drag horizontally to browse banners"
+  >
+    <div class="home-category-banners home-category-banners__track">
+      {
+        banners.map((banner, bi) => {
+          const linked = hasNavHref(banner.href);
+          const img = (
+            <img
+              class="home-category-banner-img"
+              src={banner.src}
+              alt={banner.alt}
+              draggable={false}
+              loading={bi === 0 ? 'eager' : 'lazy'}
+              fetchpriority={bi === 0 ? 'high' : undefined}
+              decoding="async"
+              referrerpolicy="no-referrer"
+            />
+          );
+
+          const inner = linked ? (
+            <a
+              class="home-category-banner-link"
+              href={banner.href!.trim()}
+              target={isOutboundUrl(banner.href!) ? '_blank' : undefined}
+              rel={isOutboundUrl(banner.href!) ? 'noopener noreferrer' : undefined}
+              aria-label={
+                isOutboundUrl(banner.href!)
+                  ? `${banner.alt || 'Featured banner'} · opens in new tab`
+                  : `${banner.alt || 'Featured banner'} · on this site`
+              }
+            >
+              {img}
+            </a>
+          ) : (
+            <div class="home-category-banner-tile">{img}</div>
+          );
+
+          return (
+            <div class="home-category-banners__slide">
+              {inner}
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+  <button
+    type="button"
+    class="home-category-banners__btn home-category-banners__btn--next"
+    data-banner-next
+    aria-label={navNextLabel}
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"
+      ><path
+        fill="currentColor"
+        d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"></path></svg
+    >
+  </button>
+</div>
+
+<script>
+  (function () {
+    function slideStep(viewport: HTMLElement): number {
+      const slide = viewport.querySelector('.home-category-banners__slide') as HTMLElement | null;
+      const track = viewport.querySelector('.home-category-banners__track') as HTMLElement | null;
+      if (!slide || !track) return viewport.clientWidth * 0.22;
+      const gapRaw = getComputedStyle(track).columnGap || getComputedStyle(track).gap;
+      const gap = Number.parseFloat(gapRaw) || 0;
+      return slide.offsetWidth + gap;
+    }
+
+    function updateButtons(viewport: HTMLElement, prev: HTMLButtonElement, next: HTMLButtonElement) {
+      const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+      const left = viewport.scrollLeft;
+      prev.disabled = left <= 2;
+      next.disabled = left >= max - 2;
+    }
+
+    function setup(shell: HTMLElement) {
+      const viewport = shell.querySelector('[data-banner-viewport]') as HTMLElement | null;
+      const prev = shell.querySelector('[data-banner-prev]') as HTMLButtonElement | null;
+      const next = shell.querySelector('[data-banner-next]') as HTMLButtonElement | null;
+      if (!viewport || !prev || !next) return;
+
+      const sync = () => updateButtons(viewport, prev, next);
+
+      prev.addEventListener('click', () => {
+        viewport.scrollBy({ left: -slideStep(viewport), behavior: 'smooth' });
+      });
+      next.addEventListener('click', () => {
+        viewport.scrollBy({ left: slideStep(viewport), behavior: 'smooth' });
+      });
+
+      viewport.addEventListener('scroll', sync, { passive: true });
+
+      viewport.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          viewport.scrollBy({ left: -slideStep(viewport), behavior: 'smooth' });
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          viewport.scrollBy({ left: slideStep(viewport), behavior: 'smooth' });
+        }
+      });
+
+      /** Dragging steals pointer capture from nested `<a>`; only capture after threshold so taps navigate. */
+      const DRAG_THRESHOLD_PX = 8;
+
+      let gestureActive = false;
+      let gestureDragging = false;
+      let startClientX = 0;
+      let startScrollLeft = 0;
+      let activePointerId = -1;
+
+      viewport.addEventListener('pointerdown', (e: PointerEvent) => {
+        if (e.button !== 0) return;
+        gestureActive = true;
+        gestureDragging = false;
+        startClientX = e.clientX;
+        startScrollLeft = viewport.scrollLeft;
+        activePointerId = e.pointerId;
+      });
+
+      viewport.addEventListener('pointermove', (e: PointerEvent) => {
+        if (!gestureActive || e.pointerId !== activePointerId) return;
+        const dx = e.clientX - startClientX;
+        if (!gestureDragging) {
+          if (Math.abs(dx) < DRAG_THRESHOLD_PX) return;
+          gestureDragging = true;
+          viewport.classList.add('is-dragging');
+          try {
+            viewport.setPointerCapture(e.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+        viewport.scrollLeft = startScrollLeft - dx;
+      });
+
+      const endGesture = (e: PointerEvent) => {
+        if (!gestureActive || e.pointerId !== activePointerId) return;
+        gestureActive = false;
+        if (gestureDragging) {
+          gestureDragging = false;
+          viewport.classList.remove('is-dragging');
+          try {
+            viewport.releasePointerCapture(e.pointerId);
+          } catch {
+            /* ignore */
+          }
+          viewport.addEventListener(
+            'click',
+            (ev) => {
+              ev.preventDefault();
+              ev.stopPropagation();
+            },
+            { capture: true, once: true },
+          );
+        }
+        activePointerId = -1;
+      };
+
+      viewport.addEventListener('pointerup', endGesture);
+      viewport.addEventListener('pointercancel', endGesture);
+
+      window.addEventListener('resize', sync);
+      const ro = new ResizeObserver(sync);
+      ro.observe(viewport);
+      ro.observe(shell);
+
+      sync();
+    }
+
+    document.querySelectorAll<HTMLElement>('[data-home-category-banners]').forEach(setup);
+  })();
+</script>

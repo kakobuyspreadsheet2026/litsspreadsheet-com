@@ -1,0 +1,69 @@
+---
+interface Props {
+  ratingValue: string;
+  reviewCount: number;
+  class?: string;
+}
+
+const { ratingValue, reviewCount, class: className = '' } = Astro.props;
+const rating = Math.min(5, Math.max(0, Number.parseFloat(ratingValue) || 0));
+---
+
+<div
+  class={`product-rating ${className}`.trim()}
+  aria-label={`Rated ${ratingValue} out of 5 from ${reviewCount} community reviews`}
+>
+  <div class="product-rating__stars" style={`--rating: ${rating}`}>
+    <span class="product-rating__track" aria-hidden="true">★★★★★</span>
+    <span class="product-rating__fill" aria-hidden="true">★★★★★</span>
+  </div>
+  <span class="product-rating__value">{ratingValue}</span>
+  <span class="product-rating__count">({reviewCount} reviews)</span>
+</div>
+
+<style>
+  .product-rating {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .product-rating__stars {
+    position: relative;
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0.08em;
+  }
+
+  .product-rating__track,
+  .product-rating__fill {
+    display: block;
+  }
+
+  .product-rating__track {
+    color: #e5e7eb;
+  }
+
+  .product-rating__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--rating) / 5 * 100%);
+    overflow: hidden;
+    color: #eab308;
+    white-space: nowrap;
+  }
+
+  .product-rating__value {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .product-rating__count {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+</style>

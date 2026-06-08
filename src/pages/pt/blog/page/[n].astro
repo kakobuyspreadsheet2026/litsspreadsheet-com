@@ -1,0 +1,40 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import BlogPageBody from '../../../../components/pages/BlogPageBody.astro';
+import blogPosts from '../../../../data/blogPosts.json';
+import { buildBlogPageProps } from '../../../../lib/buildBlogPageProps';
+import { getBlogPaginationParamNs } from '../../../../lib/blogPagination';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getBlogPaginationParamNs(blogPosts.length).map((n) => ({ params: { n } }));
+}
+
+const pageNum = Number(Astro.params.n);
+const props = buildBlogPageProps('pt', Astro.site, pageNum);
+---
+
+<Layout
+  title={props.layoutTitle}
+  description={props.copy.description}
+  canonicalPath={props.canonicalPath}
+  locale={props.locale}
+  i18nRouteSegment="blog"
+  jsonLd={props.jsonLd}
+  prevUrl={props.prevUrl}
+  nextUrl={props.nextUrl}
+>
+  <BlogPageBody
+    locale={props.locale}
+    copy={props.copy}
+    homeHref={props.homeHref}
+    posts={props.listingPosts}
+    listingPage={props.currentPage}
+    totalListingPages={props.totalPages}
+    breadcrumbUi={[
+      { label: props.copy.breadcrumbHomeLabel, href: props.homeHref },
+      { label: props.copy.h1 },
+    ]}
+  />
+</Layout>

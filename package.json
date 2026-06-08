@@ -1,0 +1,18 @@
+{
+  "name": "litbuyspreadsheet-com",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev --port 4789 --host",
+    "prebuild": "node scripts/fetch-featured.mjs",
+    "sync:litrepstar-home": "REFRESH_LITREPSTAR=1 node scripts/fetch-litrepstar-home.mjs",
+    "sync:litrepstar-prices": "node scripts/backfill-litrepstar-prices.mjs",
+    "sync:catalog-images": "node scripts/migrate-catalog-images.mjs",
+    "build": "npm run prebuild && astro build",
+    "preview": "astro preview --port 4174"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.4.2",
+    "astro": "^5.12.9"
+  }
+}

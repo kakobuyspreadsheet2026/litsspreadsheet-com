@@ -1,0 +1,314 @@
+---
+import SiteHeader from '../SiteHeader.astro';
+import SiteFooter from '../SiteFooter.astro';
+import type { BlogPageCopy } from '../../i18n/copy/blogPage';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+export type BlogPostListEntry = {
+  slug: string;
+  title: string;
+  published: string;
+  description: string;
+  lang?: string;
+};
+
+export type BlogBreadcrumbCrumb = { label: string; href?: string };
+
+interface Props {
+  locale: string;
+  copy: BlogPageCopy;
+  homeHref: string;
+  posts?: BlogPostListEntry[];
+  breadcrumbUi?: readonly BlogBreadcrumbCrumb[];
+  listingPage?: number;
+  totalListingPages?: number;
+}
+
+const {
+  locale,
+  copy,
+  homeHref,
+  posts = [],
+  breadcrumbUi,
+  listingPage = 1,
+  totalListingPages = 1,
+} = Astro.props;
+
+const hubBase = getRelativeLocaleUrl(locale, 'blog').replace(/\/+$/, '');
+
+function listingHref(page: number): string {
+  if (page <= 1) return `${hubBase}/`;
+  return `${hubBase}/page/${page}/`;
+}
+
+const prevHref = listingPage > 1 ? listingHref(listingPage - 1) : undefined;
+const nextHref = listingPage < totalListingPages ? listingHref(listingPage + 1) : undefined;
+
+const pageSummaryText = copy.paginationPageSummaryTemplate
+  .replace('{current}', String(listingPage))
+  .replace('{total}', String(totalListingPages));
+
+const showPagination = totalListingPages > 1;
+const aboutHref = getRelativeLocaleUrl(locale, 'about');
+const showEnglishBanner = locale !== 'en' && copy.blogEnglishBannerLead.length > 0;
+---
+
+<SiteHeader locale={locale} />
+
+<main>
+  <section class="band-alt">
+    <div class="wrap">
+      <div class="page-mast">
+        <p class="blog-back">
+          <a href={homeHref}>← {copy.breadcrumbHomeLabel}</a>
+        </p>
+
+        {
+          breadcrumbUi && breadcrumbUi.length > 0 ? (
+            <nav class="blog-bc" aria-label="Breadcrumb">
+              <ol class="blog-bc-list">
+                {breadcrumbUi.map((crumb, i) => (
+                  <li
+                    class:list={{
+                      'blog-bc-current': i === breadcrumbUi.length - 1,
+                    }}
+                  >
+                    {crumb.href ? (
+                      <a href={crumb.href}>{crumb.label}</a>
+                    ) : (
+                      <span aria-current="page">{crumb.label}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          ) : null
+        }
+
+        <h1 class="simple-page-title">{copy.h1}</h1>
+        <div class="blog-intro" set:html={copy.introHtml} />
+
+        {
+          showEnglishBanner ? (
+            <p class="blog-lang-banner">
+              {copy.blogEnglishBannerLead}{' '}
+              <a href={aboutHref}>{copy.blogEnglishBannerLinkText}</a>.
+            </p>
+          ) : null
+        }
+
+        {
+          posts.length > 0 ? (
+            <ul class="blog-post-list">
+              {posts.map((p) => (
+                <li class="blog-post-card">
+                  <time class="blog-post-date" datetime={p.published}>
+                    {p.published}
+                  </time>
+                  <h2 class="blog-post-title">
+                    <a href={`/blog/${p.slug}/`}>{p.title}</a>
+                  </h2>
+                  <p class="blog-post-desc">{p.description}</p>
+                  {p.lang === 'en' && locale !== 'en' && copy.postCardEnglishNote ? (
+                    <p class="blog-post-lang-note">{copy.postCardEnglishNote}</p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="blog-placeholder muted">{copy.emptyListMessage}</p>
+          )
+        }
+
+        {
+          showPagination ? (
+            <nav class="blog-pagination" aria-label={copy.paginationNavAriaLabel}>
+              <div class="blog-pagination-inner">
+                {prevHref ? (
+                  <a class="blog-pagination-link" href={prevHref} rel="prev">
+                    {copy.paginationPrevious}
+                  </a>
+                ) : (
+                  <span class="blog-pagination-edge blog-pagination-edge--disabled">{copy.paginationPrevious}</span>
+                )}
+                <span class="blog-pagination-summary">{pageSummaryText}</span>
+                {nextHref ? (
+                  <a class="blog-pagination-link" href={nextHref} rel="next">
+                    {copy.paginationNext}
+                  </a>
+                ) : (
+                  <span class="blog-pagination-edge blog-pagination-edge--disabled">{copy.paginationNext}</span>
+                )}
+              </div>
+            </nav>
+          ) : null
+        }
+      </div>
+    </div>
+  </section>
+</main>
+
+<SiteFooter locale={locale} />
+
+<style>
+  .blog-back {
+    margin: 0 0 0.35rem;
+    font-size: 0.875rem;
+  }
+  .blog-bc {
+    margin: 0 0 0.65rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .blog-bc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .blog-bc-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .blog-bc-list li:not(.blog-bc-current)::after {
+    content: '/';
+    color: var(--border);
+    margin-left: 0.35rem;
+    pointer-events: none;
+  }
+  .blog-bc-list a {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+  .blog-bc-list a:hover {
+    text-decoration: underline;
+  }
+  .blog-lang-banner {
+    margin: 0 0 1rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0.45rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 42rem;
+  }
+  .blog-lang-banner a {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+  }
+  .blog-intro {
+    margin: 0 0 1.25rem;
+  }
+  .blog-intro :global(.section-intro) {
+    margin-top: 0;
+  }
+  .blog-placeholder {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .blog-post-list {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 42rem;
+  }
+  .blog-post-card {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--surface, #fff);
+  }
+  .blog-post-date {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  .blog-post-title {
+    margin: 0 0 0.4rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .blog-post-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .blog-post-title a:hover {
+    color: var(--accent-dark, #0f766e);
+    text-decoration: underline;
+  }
+  .blog-post-desc {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .blog-post-lang-note {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .blog-pagination {
+    margin: 1.75rem 0 0;
+    max-width: 42rem;
+  }
+  .blog-pagination-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--surface, #fff);
+    font-size: 0.875rem;
+  }
+  .blog-pagination-summary {
+    color: var(--muted);
+    text-align: center;
+    flex: 1 1 auto;
+    order: 2;
+  }
+  .blog-pagination-link {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+  .blog-pagination-link:hover {
+    text-decoration: underline;
+  }
+  .blog-pagination-edge {
+    min-width: 5rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .blog-pagination-edge--disabled {
+    opacity: 0.45;
+    cursor: default;
+    font-weight: 500;
+  }
+  .blog-pagination-inner > .blog-pagination-link:first-child,
+  .blog-pagination-inner > .blog-pagination-edge:first-child {
+    order: 1;
+  }
+  .blog-pagination-inner > .blog-pagination-link:last-child,
+  .blog-pagination-inner > .blog-pagination-edge:last-child {
+    order: 3;
+  }
+</style>

@@ -1,0 +1,149 @@
+---
+import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
+import { getSpreadsheetBrowseCategories } from '../lib/spreadsheetCatalogLinks';
+import { productDetailHref } from '../lib/productDetailRoutes';
+
+interface Props {
+  locale?: string;
+  title?: string;
+  intro?: string;
+  /** Limit lanes shown (default: all 12). */
+  limit?: number;
+}
+
+const {
+  locale = 'en',
+  title = 'LitBuy Spreadsheet Categories',
+  intro = 'Choose a category to open the matching Litrepstar catalogue in a new tab. Sample items below open Litrepstar product pages in a new tab.',
+  limit,
+} = Astro.props;
+
+const categories = getSpreadsheetBrowseCategories().slice(0, limit ?? undefined);
+---
+
+<section class="ssp-category-browse" aria-labelledby="ssp-category-browse-heading">
+  <h2 id="ssp-category-browse-heading" class="ssp-category-browse__title">{title}</h2>
+  <p class="ssp-category-browse__intro">{intro}</p>
+  <ul class="ssp-category-browse__grid">
+    {
+      categories.map((cat) => (
+        <li class="ssp-category-browse__item">
+          <a
+            href={litrepstarCategoryUrl(cat.slug)}
+            class="ssp-category-browse__cat"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="ssp-category-browse__label">{cat.label}</span>
+            <span class="ssp-category-browse__count">{cat.productCount} picks</span>
+          </a>
+          {
+            cat.sampleSlug && (
+              <a
+                href={productDetailHref(locale, cat.slug, cat.sampleSlug)}
+                class="ssp-category-browse__sample"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Example: {cat.sampleTitle}
+              </a>
+            )
+          }
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .ssp-category-browse {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .ssp-category-browse__title {
+    margin: 0 auto 0.65rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .ssp-category-browse__intro {
+    margin: 0 auto 1.25rem;
+    max-width: 44rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .ssp-category-browse__grid {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    max-width: 72rem;
+  }
+
+  @media (max-width: 960px) {
+    .ssp-category-browse__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ssp-category-browse__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ssp-category-browse__item {
+    margin: 0;
+    padding: 0.85rem 0.95rem;
+    border-radius: 0.55rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-align: left;
+  }
+
+  .ssp-category-browse__cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .ssp-category-browse__cat:hover .ssp-category-browse__label {
+    color: var(--accent-dark);
+  }
+
+  .ssp-category-browse__label {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .ssp-category-browse__count {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .ssp-category-browse__sample {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .ssp-category-browse__sample:hover {
+    text-decoration: underline;
+  }
+</style>

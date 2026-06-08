@@ -1,0 +1,7 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+export const prerender = true;
+
+return Astro.redirect(`${getRelativeLocaleUrl('de', 'how-to-buy')}#spreadsheet-guide`, 301);
+---

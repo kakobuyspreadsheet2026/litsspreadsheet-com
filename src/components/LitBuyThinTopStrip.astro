@@ -1,0 +1,70 @@
+---
+import { litbuyspreadsheetHomeTopStripBannerUrl, ml } from '../consts';
+
+interface Props {
+  /** When true, the strip image loads eagerly (desktop homepage). Hidden on mobile via CSS. */
+  priority?: boolean;
+}
+
+const { priority = false } = Astro.props;
+const stripLoading = priority ? 'eager' : 'lazy';
+---
+
+<div class="kb-thin-top-strip">
+  <a
+    class="kb-thin-top-strip__link"
+    href={ml}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Litrepstar promotion — opens litrepstar.com in a new tab"
+  >
+    <img
+      class="kb-thin-top-strip__img"
+      src={litbuyspreadsheetHomeTopStripBannerUrl}
+      alt="LitBuy Spreadsheet promo strip — opens Litrepstar catalogue"
+      loading={stripLoading}
+      decoding="async"
+      fetchpriority={priority ? 'high' : undefined}
+      referrerpolicy="no-referrer"
+    />
+  </a>
+</div>
+
+<style>
+  .kb-thin-top-strip {
+    box-sizing: border-box;
+    position: relative;
+    z-index: 120;
+    width: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
+    display: block;
+    background: #f7e017;
+    border-bottom: 1px solid var(--border);
+    line-height: 0;
+  }
+
+  .kb-thin-top-strip__link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-decoration: none;
+    outline-offset: 2px;
+  }
+
+  /** LitBuy prod: max-height 40px; max-width 100% — taller on phones so promo reads */
+  .kb-thin-top-strip__img {
+    display: block;
+    max-height: 40px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  @media (max-width: 640px) {
+    .kb-thin-top-strip {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+import { absoluteCanonicalUrl } from '../../../lib/canonicalPath';
+
+import fs from 'node:fs';
+import path from 'node:path';
+import Layout from '../../../layouts/Layout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { defaultOgImagePath, siteStructuredDataIds, siteOrigin } from '../../../consts';
+import { HTML_LANG_BY_ROUTE } from '../../../i18n/config';
+import { normalizeMirrorImageAlts } from '../../../lib/normalizeMirrorImageAlts';
+
+export const prerender = true;
+
+const locale = 'en';
+const canonicalPath = '/news/openstar-recruit';
+
+const title =
+  'LitBuy Openstar rookie creator (KOC) notice — archived mirror | LitBuy Spreadsheet hub';
+const description =
+  'Offline mirror of LitBuy’s Openstar / rookie creator recruitment announcement for Spreadsheet hub readers. Links inside point to LitBuy as in the original notice; verify live rules in your signed-in console.';
+
+const newsHref = getRelativeLocaleUrl(locale, 'news');
+const homeHref = getRelativeLocaleUrl(locale, '');
+
+const origin = Astro.site?.origin ?? siteOrigin;
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+const shareImageUrl = new URL(defaultOgImagePath, Astro.site).href;
+
+const mirrorPath = path.join(process.cwd(), 'public', 'news-openstar', 'mirror-inner.html');
+const mirrorHtml = fs.readFileSync(mirrorPath, 'utf8');
+const bodyMatch = mirrorHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+let bodyInner = bodyMatch ? bodyMatch[1].trim() : '';
+
+bodyInner = bodyInner.replace(/<\/?noscript>[\s\S]*?<\/noscript>/gi, '');
+bodyInner = bodyInner.replace(/← oopbuyai\.com/g, '← litsspreadsheet.com');
+bodyInner = bodyInner.replace(/Archived Oopbuy notice/g, 'Archived LitBuy notice');
+bodyInner = normalizeMirrorImageAlts(bodyInner);
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${pageUrl}#webpage`,
+  name: 'LitBuy Openstar / rookie creator program notice (archived mirror)',
+  url: pageUrl,
+  description,
+  image: [shareImageUrl],
+  inLanguage: HTML_LANG_BY_ROUTE.en,
+  isPartOf: { '@id': websiteId },
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  hreflangLocales={[]}
+  jsonLd={webPageLd}
+>
+  <SiteHeader locale={locale} />
+
+  <main>
+    <section class="band-alt">
+      <div class="wrap">
+        <div class="page-mast">
+          <p class="openstar-nav">
+            <a href={homeHref}>← Home</a>
+            <span aria-hidden="true"> · </span>
+            <a href={newsHref}>News hub</a>
+          </p>
+          <p class="openstar-lede">
+            Archived mirror for reference—styling and scripts come from the saved capture; official wording and eligibility belong to LitBuy only.
+          </p>
+          <div class="openstar-mirror-host" set:html={bodyInner} />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter locale="en" />
+</Layout>
+
+<style>
+  .openstar-nav {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+  }
+  .openstar-lede {
+    margin: 0 0 1rem;
+    max-width: 48rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .openstar-mirror-host {
+    width: 100%;
+    max-width: min(100%, 120rem);
+    margin-inline: auto;
+    overflow-x: auto;
+    contain: inline-size;
+  }
+</style>

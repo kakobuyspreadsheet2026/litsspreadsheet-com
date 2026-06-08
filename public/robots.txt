@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /news-openstar/
+
+Sitemap: https://litsspreadsheet.com/sitemap-index.xml

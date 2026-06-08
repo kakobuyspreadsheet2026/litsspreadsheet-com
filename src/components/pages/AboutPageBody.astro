@@ -1,0 +1,119 @@
+---
+import SiteHeader from '../SiteHeader.astro';
+import SiteFooter from '../SiteFooter.astro';
+import type { AboutPageCopy } from '../../i18n/copy/aboutPage';
+
+interface Props {
+  locale: string;
+  copy: AboutPageCopy;
+  homeHref: string;
+}
+
+const { locale, copy, homeHref } = Astro.props;
+---
+
+<SiteHeader locale={locale} />
+
+<main>
+  <section class="band-alt">
+    <div class="wrap">
+      <div class="page-mast">
+        <p class="about-back">
+          <a href={homeHref}>← {copy.breadcrumbHomeLabel}</a>
+        </p>
+
+        <nav class="about-bc" aria-label="Breadcrumb">
+          <ol class="about-bc-list">
+            <li><a href={homeHref}>{copy.breadcrumbHomeLabel}</a></li>
+            <li aria-current="page">{copy.h1}</li>
+          </ol>
+        </nav>
+
+        <h1 class="simple-page-title">{copy.h1}</h1>
+        <div class="about-intro" set:html={copy.introHtml} />
+
+        {
+          copy.sections.map((sec) => (
+            <section class="about-block">
+              <h2 class="about-h2">{sec.h2}</h2>
+              <div class="about-section" set:html={sec.html} />
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</main>
+
+<SiteFooter locale={locale} />
+
+<style>
+  .about-back {
+    margin: 0 0 0.35rem;
+    font-size: 0.875rem;
+  }
+  .about-bc {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .about-bc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .about-bc-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .about-bc-list li:not([aria-current])::after {
+    content: '/';
+    color: var(--border);
+    margin-left: 0.35rem;
+    pointer-events: none;
+  }
+  .about-bc-list a {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+  .about-bc-list a:hover {
+    text-decoration: underline;
+  }
+  .about-intro {
+    margin: 0 0 1rem;
+    max-width: 48rem;
+  }
+  .about-block {
+    margin: 0;
+    padding: 0;
+  }
+  .about-h2 {
+    margin: 1.75rem 0 0.65rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .about-block:first-of-type .about-h2 {
+    margin-top: 1.25rem;
+  }
+  .about-section {
+    margin: 0 0 1rem;
+    max-width: 48rem;
+    font-size: 0.975rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .about-section :global(a) {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+  }
+  .about-section :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

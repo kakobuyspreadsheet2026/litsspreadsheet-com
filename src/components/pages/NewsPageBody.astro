@@ -1,0 +1,433 @@
+---
+import SiteHeader from '../SiteHeader.astro';
+import SiteFooter from '../SiteFooter.astro';
+import type { NewsCopy } from '../../i18n/copy/newsPage';
+import {
+  LITBUY_FREIGHT_ESTIMATOR,
+  LITBUY_HELP_HUB,
+  LITBUY_NOTICE_HUB,
+  LITBUY_OFFICIAL_HOME,
+  litbuyLogistics,
+  litbuyPromotions,
+} from '../../data/litbuyOfficialNews';
+
+interface Excerpt {
+  title: string;
+  sourceUrl: string;
+  bodyHtml: string;
+}
+
+interface Props {
+  locale: string;
+  copy: NewsCopy;
+  homeHref: string;
+  excerpts: Excerpt[];
+}
+
+const { locale, copy, homeHref, excerpts } = Astro.props;
+---
+
+<SiteHeader locale={locale} />
+
+<main>
+  <section class="band-alt">
+    <div class="wrap">
+      <div class="page-mast">
+        <p class="news-back-link">
+          <a href={homeHref}>{copy.backHomeLabel}</a>
+        </p>
+        <h1 class="simple-page-title" id="news-heading">{copy.h1}</h1>
+        <p class="section-intro news-intro" set:html={copy.topIntroHtml} />
+
+        <section class="news-block" aria-labelledby="news-promo-heading">
+          <h2 class="h2-sub" id="news-promo-heading">{copy.promotionsHeading}</h2>
+          <p class="section-intro news-block-intro" set:html={copy.promotionsIntroHtml} />
+          <div class="news-banner-decode-list">
+            {
+              litbuyPromotions.map((item, ri) => (
+                <article class="news-banner-decode-card" aria-labelledby={`news-promo-title-${ri}`}>
+                  <div class="news-banner-decode-visual">
+                    <a
+                      class="news-banner-decode-link"
+                      href={item.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${item.title} · opens in new tab`}
+                    >
+                      <img
+                        class="news-banner-decode-img"
+                        src={item.imageSrc}
+                        alt={item.imageAlt}
+                        loading={ri === 0 ? 'eager' : 'lazy'}
+                        fetchpriority={ri === 0 ? 'high' : undefined}
+                        decoding="async"
+                        width="1200"
+                        height="340"
+                      />
+                    </a>
+                  </div>
+                  <div class="news-banner-decode-body">
+                    <h3 class="news-banner-decode-title" id={`news-promo-title-${ri}`}>
+                      {item.title}
+                    </h3>
+                    <p class="news-card__summary">{item.summary}</p>
+                    <p class="news-card__cta">
+                      <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {copy.readOnLitbuyLabel}
+                      </a>
+                    </p>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+          <p class="news-hub-link">
+            <a href={LITBUY_NOTICE_HUB} target="_blank" rel="noopener noreferrer">
+              {copy.viewAllNoticesLabel}
+            </a>
+          </p>
+        </section>
+
+        <section class="news-block" aria-labelledby="news-logistics-heading">
+          <h2 class="h2-sub" id="news-logistics-heading">{copy.logisticsHeading}</h2>
+          <p class="section-intro news-block-intro" set:html={copy.logisticsIntroHtml} />
+          <ul class="news-card-list">
+            {
+              litbuyLogistics.map((item) => (
+                <li class="news-card news-card--logistics">
+                  <h3 class="news-card__title">{item.title}</h3>
+                  <p class="news-card__summary">{item.summary}</p>
+                  <p class="news-card__cta">
+                    <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">
+                      {copy.readOnLitbuyLabel}
+                    </a>
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <article class="official-sample" aria-labelledby="official-sample-heading">
+          <div class="official-sample-head">
+            <span class="official-sample-badge" id="official-sample-heading">{copy.official.badge}</span>
+            <a class="official-sample-link" href={LITBUY_HELP_HUB} target="_blank" rel="noopener noreferrer">
+              {copy.official.faqHubLabel}
+            </a>
+          </div>
+          <p class="official-sample-meta" set:html={copy.official.metaHtml} />
+
+          <div class="official-faq-stack">
+            {
+              excerpts.map((excerpt) => (
+                <details class="official-faq-item">
+                  <summary class="official-faq-summary">{excerpt.title}</summary>
+                  <div class="official-faq-body">
+                    <p class="official-faq-source">
+                      <a href={excerpt.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {copy.official.sourcePageLabel}
+                      </a>
+                    </p>
+                    <div class="official-faq-html" set:html={excerpt.bodyHtml} />
+                  </div>
+                </details>
+              ))
+            }
+          </div>
+        </article>
+
+        <section class="news-tools" aria-labelledby="news-tools-heading">
+          <h2 class="h2-sub" id="news-tools-heading">{copy.toolsHeading}</h2>
+          <ul class="news-tools-list">
+            <li>
+              <a href={LITBUY_OFFICIAL_HOME} target="_blank" rel="noopener noreferrer">
+                {copy.toolLitbuyHomeLabel}
+              </a>
+            </li>
+            <li>
+              <a href={LITBUY_NOTICE_HUB} target="_blank" rel="noopener noreferrer">
+                {copy.toolNoticeHubLabel}
+              </a>
+            </li>
+            <li>
+              <a href={LITBUY_HELP_HUB} target="_blank" rel="noopener noreferrer">
+                {copy.toolHelpLabel}
+              </a>
+            </li>
+            <li>
+              <a href={LITBUY_FREIGHT_ESTIMATOR} target="_blank" rel="noopener noreferrer">
+                {copy.toolFreightLabel}
+              </a>
+            </li>
+            <li>
+              <a href="https://www.litbuy.com/sourcetrack" target="_blank" rel="noopener noreferrer">
+                {copy.toolSourceTrackLabel}
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <p class="section-intro news-disclaimer" set:html={copy.disclaimerHtml} />
+      </div>
+    </div>
+  </section>
+</main>
+
+<SiteFooter locale={locale} />
+
+<style>
+  .news-back-link {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+  }
+  .news-intro {
+    margin-top: 0;
+  }
+  .news-disclaimer {
+    margin-bottom: 0;
+  }
+  .h2-sub {
+    margin: 2rem 0 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .news-block-intro {
+    margin-top: 0 !important;
+    margin-bottom: 1rem;
+    max-width: 52rem;
+    font-size: 0.9rem;
+  }
+  .news-banner-decode-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+    margin: 0 0 1rem;
+    max-width: 52rem;
+    min-width: 0;
+  }
+  .news-banner-decode-card {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    overflow: hidden;
+    background: var(--surface);
+    min-width: 0;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  }
+  .news-banner-decode-visual {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, var(--hero-surface-2, #f9f9fc) 0%, var(--surface) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .news-banner-decode-link {
+    display: block;
+    line-height: 0;
+    outline-offset: 2px;
+  }
+  .news-banner-decode-link:hover .news-banner-decode-img {
+    opacity: 0.96;
+  }
+  .news-banner-decode-link:focus-visible {
+    outline: 2px solid var(--accent);
+  }
+  .news-banner-decode-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+  }
+  .news-banner-decode-body {
+    padding: 1rem 1.15rem 1.2rem;
+    min-width: 0;
+  }
+  .news-banner-decode-title {
+    margin: 0 0 0.45rem;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text);
+  }
+  .news-card-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+    max-width: 52rem;
+  }
+  .news-card {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    background: var(--surface);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  }
+  .news-card--logistics {
+    border-left: 3px solid var(--accent);
+  }
+  .news-card__title {
+    margin: 0 0 0.45rem;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text);
+  }
+  .news-card__summary {
+    margin: 0 0 0.55rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .news-card__cta {
+    margin: 0;
+    font-size: 0.84rem;
+  }
+  .news-card__cta a {
+    font-weight: 600;
+  }
+  .news-hub-link {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+    max-width: 52rem;
+  }
+  .news-hub-link a {
+    font-weight: 600;
+  }
+  .news-tools-list {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    max-width: 52rem;
+  }
+  .news-tools-list a {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .official-sample {
+    margin: 2rem 0;
+    padding: 1.35rem 1.25rem 1.5rem;
+    max-width: 52rem;
+    min-width: 0;
+    background: linear-gradient(180deg, var(--hero-surface-2, #f9f9fc) 0%, var(--surface) 100%);
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    border-left: 4px solid var(--accent);
+    text-align: left;
+  }
+  .official-sample-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    margin-bottom: 0.65rem;
+  }
+  .official-sample-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    background: var(--accent-badge-bg);
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+  }
+  .official-sample-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .official-sample-meta {
+    margin: 0 0 1rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .official-faq-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .official-faq-item {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: #fff;
+    min-width: 0;
+    overflow-x: auto;
+  }
+  .official-faq-item[open] {
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+  }
+  .official-faq-summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.85rem 2.25rem 0.85rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.45;
+    position: relative;
+    user-select: none;
+  }
+  .official-faq-summary::-webkit-details-marker {
+    display: none;
+  }
+  .official-faq-summary::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: translateY(-65%) rotate(45deg);
+    transition: transform 0.18s ease;
+    opacity: 0.75;
+  }
+  .official-faq-item[open] .official-faq-summary::after {
+    transform: translateY(-25%) rotate(-135deg);
+  }
+  .official-faq-summary:hover {
+    background: rgba(13, 148, 136, 0.06);
+  }
+  .official-faq-body {
+    padding: 0 1rem 1rem;
+    border-top: 1px solid var(--border);
+    background: #fafafa;
+    min-width: 0;
+  }
+  .official-faq-source {
+    margin: 0.75rem 0 0.35rem;
+    font-size: 0.8125rem;
+  }
+  .official-faq-source a {
+    font-weight: 600;
+  }
+  .official-faq-html {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--muted);
+    min-width: 0;
+  }
+  .official-faq-html :where(p, ul, ol) {
+    margin: 0 0 0.55rem;
+  }
+  .official-faq-html :where(ul, ol) {
+    padding-left: 1.35rem;
+  }
+  .official-faq-html :where(li) {
+    margin-bottom: 0.35rem;
+  }
+  .official-faq-html :where(strong, b) {
+    color: var(--text);
+  }
+</style>

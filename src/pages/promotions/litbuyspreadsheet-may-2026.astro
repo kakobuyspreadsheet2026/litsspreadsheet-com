@@ -1,0 +1,135 @@
+---
+import { absoluteCanonicalUrl } from '../../lib/canonicalPath';
+
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import promo from '../../data/litbuyspreadsheetMay2026Promotion.json';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { defaultOgImagePath, litbuyCheckoutUrl, siteStructuredDataIds, siteOrigin } from '../../consts';
+import { HTML_LANG_BY_ROUTE } from '../../i18n/config';
+
+export const prerender = true;
+
+const locale = 'en';
+const canonicalPath = '/promotions/litbuyspreadsheet-may-2026';
+const homeHref = getRelativeLocaleUrl(locale, '');
+const origin = Astro.site?.origin ?? siteOrigin;
+const litbuySourceUrl = `${litbuyCheckoutUrl}/tipdetail?id=48`;
+
+const description =
+  'May 2026 LitBuy promotions overview on LitBuy Spreadsheet hub: limited-time shipping subsidy, KAKOMAY coupon pack, extra product discounts, referral rewards, and leaderboard.';
+
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+const promoShareImage = new URL(defaultOgImagePath, Astro.site).href;
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${pageUrl}#webpage`,
+  name: promo.title,
+  url: pageUrl,
+  description,
+  image: [promoShareImage],
+  inLanguage: HTML_LANG_BY_ROUTE.en,
+  isPartOf: { '@id': websiteId },
+};
+---
+
+<Layout
+  title={`${promo.title} · LitBuy Spreadsheet`}
+  description={description}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  hreflangLocales={[]}
+  ogType="article"
+  articlePublishedTime={promo.publishedISO}
+  articleModifiedTime={promo.publishedISO}
+  jsonLd={webPageLd}
+>
+  <SiteHeader locale={locale} />
+
+  <main>
+    <section class="band-alt">
+      <div class="wrap">
+        <div class="page-mast">
+          <p class="promo-back">
+            <a href={homeHref}>← Home</a>
+          </p>
+          <h1 class="simple-page-title">{promo.title}</h1>
+          <p class="promo-meta">
+            <span>Mirrored from LitBuy announcements · {promo.publishedDisplay}</span>
+            {' · '}
+            <a href={litbuySourceUrl} target="_blank" rel="noopener noreferrer">Official tip page ↗</a>
+          </p>
+
+          <article class="official-sample promo-sample">
+            <div class="official-faq-html" set:html={promo.bodyHtml} />
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter locale="en" />
+</Layout>
+
+<style>
+  .promo-back {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+  }
+  .promo-meta {
+    margin: 0 0 1.25rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .promo-sample {
+    margin: 0;
+    padding: 1.35rem 1.25rem 1.5rem;
+    max-width: 52rem;
+    min-width: 0;
+    background: linear-gradient(180deg, var(--hero-surface-2, #f9f9fc) 0%, var(--surface) 100%);
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    border-left: 4px solid var(--accent);
+    text-align: left;
+  }
+  .official-faq-html {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--muted);
+    min-width: 0;
+  }
+  .official-faq-html :where(p, ul, ol) {
+    margin: 0 0 0.55rem;
+  }
+  .official-faq-html :where(ul, ol) {
+    padding-left: 1.35rem;
+  }
+  .official-faq-html :where(li) {
+    margin-bottom: 0.35rem;
+  }
+  .official-faq-html :where(strong, b) {
+    color: var(--text);
+  }
+  .official-faq-html :where(code) {
+    font-size: 0.875em;
+    font-weight: 700;
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--text);
+  }
+  .official-faq-html :where(a) {
+    font-weight: 600;
+  }
+  .official-faq-html img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+  }
+</style>

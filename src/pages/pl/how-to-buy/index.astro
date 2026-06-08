@@ -1,0 +1,28 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import HowToBuyPageBody from '../../../components/pages/HowToBuyPageBody.astro';
+import { buildHowToBuyPageProps } from '../../../lib/buildHowToBuyPageProps';
+
+export const prerender = true;
+
+const props = buildHowToBuyPageProps('pl', Astro.site);
+---
+
+<Layout
+  title={props.copy.title}
+  description={props.copy.description}
+  canonicalPath={props.canonicalPath}
+  locale={props.locale}
+  i18nRouteSegment="how-to-buy"
+  jsonLd={props.jsonLd}
+>
+  <HowToBuyPageBody
+    locale={props.locale}
+    copy={props.copy}
+    spreadsheetCopy={props.spreadsheetCopy}
+    homeHref={props.homeHref}
+    newsHref={props.newsHref}
+    sheetUrl={props.sheetUrl}
+    excerpts={props.excerpts}
+  />
+</Layout>

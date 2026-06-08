@@ -1,0 +1,16 @@
+---
+import {
+  CATEGORY_UI_SLUGS,
+  litrepstarCategoryUrl,
+  type CategoryUiSlug,
+} from '../../lib/categorySlugMapping';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return CATEGORY_UI_SLUGS.map((slug) => ({ params: { slug } }));
+}
+
+const slug = Astro.params.slug as CategoryUiSlug;
+return Astro.redirect(litrepstarCategoryUrl(slug), 301);
+---

@@ -1,0 +1,50 @@
+---
+import { absoluteCanonicalUrl } from '../../lib/canonicalPath';
+
+import Layout from '../../layouts/Layout.astro';
+import LocaleHomeStub from '../../components/LocaleHomeStub.astro';
+import { deHome } from '../../i18n/stubs/de';
+import { litbuyspreadsheetHomeHeroBannerUrl, litbuyspreadsheetHomeHeroMobileBannerUrl, siteStructuredDataIds, siteOrigin } from '../../consts';
+import { getHotProductsLd } from '../../lib/hotProductsLd';
+import { homeFaqPageLd } from '../../lib/homeFaqLd';
+
+export const prerender = true;
+
+const locale = 'de';
+const canonicalPath = '/de/';
+
+const origin = Astro.site?.origin ?? siteOrigin;
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+
+const hotProductsLd = getHotProductsLd(origin, pageUrl);
+const faqLd = homeFaqPageLd(pageUrl, deHome.sections);
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${pageUrl}#webpage`,
+  name: deHome.webPageName,
+  url: pageUrl,
+  description: deHome.description,
+  inLanguage: 'de',
+  isPartOf: { '@id': websiteId },
+  keywords: deHome.webPageKeywords,
+  mainEntity: { '@id': hotProductsLd['@id'] },
+  hasPart: [{ '@id': faqLd['@id'] }],
+};
+---
+
+<Layout
+  locale={locale}
+  title={deHome.title}
+  description={deHome.description}
+  canonicalPath={canonicalPath}
+  i18nRouteSegment=""
+  jsonLd={[webPageLd, hotProductsLd, faqLd]}
+  showDiscordTopBanner={false}
+  lcpPreloadImages={[litbuyspreadsheetHomeHeroBannerUrl]}
+  mobileLcpPreloadImages={[litbuyspreadsheetHomeHeroMobileBannerUrl]}
+>
+  <LocaleHomeStub content={deHome} />
+</Layout>

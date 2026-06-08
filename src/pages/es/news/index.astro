@@ -1,0 +1,56 @@
+---
+import { absoluteCanonicalUrl } from '../../../lib/canonicalPath';
+
+import Layout from '../../../layouts/Layout.astro';
+import NewsPageBody from '../../../components/pages/NewsPageBody.astro';
+import { ml, siteStructuredDataIds, siteOrigin } from '../../../consts';
+import officialLitbuyNoticeExcerpts from '../../../data/officialLitbuyNoticeExcerpts.json';
+import { LITBUY_OFFICIAL_HOME } from '../../../data/litbuyOfficialNews';
+import { getNewsCopy, hydrateNewsCopy } from '../../../i18n/copy/newsPage';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { HTML_LANG_BY_ROUTE } from '../../../i18n/config';
+
+export const prerender = true;
+
+const locale = 'es';
+const canonicalPath = '/es/news';
+
+const origin = Astro.site?.origin ?? siteOrigin;
+
+const raw = getNewsCopy(locale);
+const copy = hydrateNewsCopy(raw, {
+  guideUrl: `${ml}/guide`,
+  howToUrl: getRelativeLocaleUrl(locale, 'how-to-buy'),
+  litbuyHomeUrl: LITBUY_OFFICIAL_HOME,
+  homeCuratedUrl: `${getRelativeLocaleUrl(locale, '')}#curated-directory`,
+  mlCatalogUrl: ml,
+  excerptCount: officialLitbuyNoticeExcerpts.length,
+});
+
+const homeHref = getRelativeLocaleUrl(locale, '');
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+const inLang = HTML_LANG_BY_ROUTE[locale];
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${pageUrl}#webpage`,
+  name: copy.title,
+  url: pageUrl,
+  description: copy.description,
+  inLanguage: inLang,
+  isPartOf: { '@id': websiteId },
+};
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  i18nRouteSegment="news"
+  jsonLd={[webPageLd]}
+>
+  <NewsPageBody locale={locale} copy={copy} homeHref={homeHref} excerpts={officialLitbuyNoticeExcerpts} />
+</Layout>

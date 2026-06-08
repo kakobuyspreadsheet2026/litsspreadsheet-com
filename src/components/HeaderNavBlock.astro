@@ -1,0 +1,605 @@
+---
+import { ml, siteDomain } from '../consts';
+import { spreadsheetLogoAlt } from '../lib/spreadsheetImageAlt';
+import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { headerNavTexts } from '../i18n/navLabels';
+import {
+  HREFLANG_BY_ROUTE,
+  ROUTE_LOCALES,
+  type RouteLocale,
+} from '../i18n/config';
+import {
+  LOCALE_NATIVE_NAME,
+  LOCALE_SWITCHER_MENU_LABEL,
+} from '../i18n/localeSwitcherLabels';
+
+interface Props {
+  pathname: string;
+  locale?: string;
+}
+
+const { pathname, locale: localeProp } = Astro.props;
+const locale =
+  typeof localeProp === 'string' && localeProp.length > 0
+    ? localeProp
+    : (Astro.currentLocale ?? 'en');
+
+const routeLocale = (ROUTE_LOCALES as readonly string[]).includes(locale)
+  ? (locale as RouteLocale)
+  : ('en' as RouteLocale);
+
+type LocaleSwitchResolved =
+  | {
+      kind: 'localized';
+      segment:
+        | ''
+        | 'about'
+        | 'how-to-buy'
+        | 'news'
+        | 'blog'
+        | 'spreadsheet';
+    }
+  | { kind: 'fixed'; href: string };
+
+function resolveLocaleSwitchPath(rawPath: string): LocaleSwitchResolved {
+  const stripped = rawPath.split('?')[0] ?? '';
+  const n = stripped.replace(/\/$/, '') || '/';
+
+  if (n === '/join/discord') {
+    return { kind: 'fixed', href: '/join/discord' };
+  }
+
+  if (/^\/news\/.+/.test(n) && n !== '/news') {
+    return { kind: 'fixed', href: n };
+  }
+
+  const segs = n.split('/').filter(Boolean);
+  const first = segs[0];
+  const rest =
+    first && (ROUTE_LOCALES as readonly string[]).includes(first) ? segs.slice(1) : segs;
+  const joined = rest.join('/');
+
+  if (joined === 'spreadsheet') {
+    return { kind: 'localized', segment: 'how-to-buy' };
+  }
+
+  if (joined === 'about' || joined === 'how-to-buy' || joined === 'news' || joined === 'blog') {
+    return { kind: 'localized', segment: joined };
+  }
+  return { kind: 'localized', segment: '' };
+}
+
+const switchResolved = resolveLocaleSwitchPath(pathname);
+const localeMenuLabel =
+  LOCALE_SWITCHER_MENU_LABEL[routeLocale] ?? LOCALE_SWITCHER_MENU_LABEL.en;
+const localeChoices = ROUTE_LOCALES.map((code) => ({
+  code,
+  label: LOCALE_NATIVE_NAME[code],
+  href:
+    switchResolved.kind === 'fixed'
+      ? switchResolved.href
+      : getRelativeLocaleUrl(code, switchResolved.segment),
+}));
+
+type NavItem = { label: string; href: string; external: boolean };
+
+const t = headerNavTexts(locale);
+
+const categoryNavSlugs = [
+  { label: 'Shoes', slug: 'shoes' },
+  { label: 'Jackets', slug: 'jackets' },
+  { label: 'T-Shirts', slug: 't-shirts' },
+  { label: 'Hoodies/Sweaters', slug: 'hoodies' },
+  { label: 'Pants/Shorts', slug: 'pants' },
+  { label: 'Headwear', slug: 'headwear' },
+  { label: 'Accessories', slug: 'accessories' },
+  { label: 'Jersey', slug: 'jersey' },
+  { label: 'Bags', slug: 'bags' },
+  { label: 'Perfume', slug: 'perfume' },
+  { label: 'Electronics', slug: 'electronics' },
+  { label: 'Other stuff', slug: 'other' },
+] as const;
+
+const categoryLinks: NavItem[] = categoryNavSlugs.map(({ label, slug }) => ({
+  label,
+  href: litrepstarCategoryUrl(slug),
+  external: true,
+}));
+
+const norm = (p: string) => (p.replace(/\/$/, '') === '' ? '/' : p.replace(/\/$/, ''));
+
+const blogHref = getRelativeLocaleUrl(locale, 'blog');
+
+const navBarLinks: NavItem[] = [
+  { label: t.howToBuy, href: getRelativeLocaleUrl(locale, 'how-to-buy'), external: false },
+  { label: t.news, href: getRelativeLocaleUrl(locale, 'news'), external: false },
+  { label: t.blog, href: blogHref, external: false },
+  { label: t.about, href: getRelativeLocaleUrl(locale, 'about'), external: false },
+];
+
+const homeHref = getRelativeLocaleUrl(locale, '');
+const blogNorm = norm(blogHref);
+
+const pathnameNorm = norm(pathname.split('?')[0] ?? pathname);
+const homeNorm = norm(homeHref);
+const drawerNavItems = navBarLinks;
+
+const localeShort = routeLocale.toUpperCase();
+---
+
+<nav class="oob-header-nav" aria-label="Site and category navigation">
+  <a
+    class:list={[
+      'oob-nav-link',
+      'oob-nav-link--home',
+      'oob-nav-link--brand',
+      { 'oob-nav-link--accent': pathnameNorm === homeNorm },
+    ]}
+    href={homeHref}
+    aria-label={`${siteDomain} home — LitBuy Spreadsheet hub`}
+  >
+    <img
+      class="oob-site-logo oob-site-logo--litbuy"
+      src="/litbuyspreadsheet-brand/logo-header.png"
+      alt={spreadsheetLogoAlt()}
+      width="34"
+      height="34"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+    />
+  </a>
+
+  <div class="oob-nav-mobile-links oob-hide-desktop">
+    <details class="oob-nav-dd oob-nav-dd--categories">
+      <summary class="oob-nav-dd-trigger" aria-label={`${t.categories}: LitBuy Spreadsheet browse menu`}>
+        {t.categories}
+      </summary>
+      <div class="oob-nav-dd-panel">
+        <a
+          class="oob-nav-dd-link oob-nav-dd-link--external oob-nav-dd-link--external-first"
+          href={ml}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Browse full catalogue on Litrepstar →
+        </a>
+        {
+          categoryLinks.map((item) => (
+            <a
+              class="oob-nav-dd-link oob-nav-dd-link--external"
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+    </details>
+
+    <a
+      class:list={[
+        'oob-nav-link',
+        'oob-nav-blog-mobile',
+        {
+          'oob-nav-link--accent':
+            pathnameNorm === blogNorm || pathnameNorm.startsWith(`${blogNorm}/`),
+        },
+      ]}
+      href={blogHref}
+    >
+      {t.blog}
+    </a>
+  </div>
+
+  <details class="oob-nav-dd oob-nav-dd--categories oob-hide-mobile">
+    <summary class="oob-nav-dd-trigger" aria-label={`${t.categories}: LitBuy Spreadsheet browse menu`}>
+      {t.categories}
+    </summary>
+    <div class="oob-nav-dd-panel">
+      <a
+        class="oob-nav-dd-link oob-nav-dd-link--external oob-nav-dd-link--external-first"
+        href={ml}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Browse full catalogue on Litrepstar →
+      </a>
+      {
+        categoryLinks.map((item) => (
+          <a
+            class="oob-nav-dd-link oob-nav-dd-link--external"
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+  </details>
+
+  <div class="oob-nav-links-desktop oob-hide-mobile">
+    {
+      navBarLinks.map((item) =>
+        item.external ? (
+          <a class="oob-nav-link" href={item.href} target="_blank" rel="noopener noreferrer">
+            {item.label}
+          </a>
+        ) : (
+          <a
+            class:list={[
+              'oob-nav-link',
+              {
+                'oob-nav-link--accent':
+                  pathnameNorm === norm(item.href) ||
+                  pathnameNorm.startsWith(`${norm(item.href)}/`),
+              },
+            ]}
+            href={item.href}
+          >
+            {item.label}
+          </a>
+        ),
+      )
+    }
+  </div>
+
+  <details class="oob-nav-dd oob-nav-dd--locale oob-hide-mobile">
+    <summary
+      class="oob-nav-dd-trigger"
+      aria-label={`${localeMenuLabel} — ${LOCALE_NATIVE_NAME[routeLocale]} (current)`}
+    >
+      {LOCALE_NATIVE_NAME[routeLocale]}
+    </summary>
+    <div class="oob-nav-dd-panel">
+      {
+        localeChoices.map(({ code, label, href }) => (
+          <a
+            class:list={['oob-nav-dd-link', code === routeLocale && 'oob-nav-dd-link--current']}
+            href={href}
+            hreflang={HREFLANG_BY_ROUTE[code]}
+            lang={code}
+            aria-current={code === routeLocale ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+  </details>
+
+  <div class="oob-nav-mobile-tools">
+    <details class="oob-nav-m-lang">
+      <summary>
+        <svg
+          class="oob-nav-m-lang-globe"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
+          <path
+            d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            stroke="currentColor"
+            stroke-width="2"></path>
+        </svg>
+        <span class="oob-nav-m-lang-code">{localeShort}</span>
+      </summary>
+      <div class="oob-nav-dd-panel oob-nav-m-lang-panel">
+        {
+          localeChoices.map(({ code, label, href }) => (
+            <a
+              class:list={['oob-nav-dd-link', code === routeLocale && 'oob-nav-dd-link--current']}
+              href={href}
+              hreflang={HREFLANG_BY_ROUTE[code]}
+              lang={code}
+              aria-current={code === routeLocale ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          ))
+        }
+      </div>
+    </details>
+
+    <details class="oob-nav-m-menu">
+      <summary aria-label="Site menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M5 7h14M5 12h14M5 17h14"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"></path>
+        </svg>
+      </summary>
+      <div class="oob-nav-m-menu-panel" tabindex="-1">
+        {
+          drawerNavItems.map((item) =>
+            item.external ? (
+              <a
+                class="oob-nav-m-drawer-link"
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <a
+                class:list={[
+                  'oob-nav-m-drawer-link',
+                  {
+                    'oob-nav-m-drawer-link--accent':
+                      pathnameNorm === norm(item.href) ||
+                      pathnameNorm.startsWith(`${norm(item.href)}/`),
+                  },
+                ]}
+                href={item.href}
+              >
+                {item.label}
+              </a>
+            ),
+          )
+        }
+      </div>
+    </details>
+  </div>
+</nav>
+
+<style>
+  .oob-site-logo {
+    display: block;
+    height: 1.75rem;
+    width: auto;
+    max-width: min(7.5rem, 38vw);
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .oob-site-logo--litbuy {
+    width: 2rem;
+    height: 2rem;
+    max-width: 2rem;
+    border-radius: 0.45rem;
+  }
+
+  .oob-nav-link--brand {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0.55rem;
+    justify-content: flex-start;
+    flex-shrink: 0;
+  }
+
+  .oob-nav-dd--categories {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .oob-nav-mobile-links {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .oob-nav-mobile-links .oob-nav-dd--categories {
+    flex: 1 1 auto;
+    min-width: 0;
+    position: relative;
+  }
+
+  @media (max-width: 767px) {
+    .oob-nav-mobile-links .oob-nav-dd--categories[open] {
+      z-index: 100;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .oob-site-logo--litbuy {
+      width: 1.75rem;
+      height: 1.75rem;
+      max-width: 1.75rem;
+    }
+
+    .oob-nav-link--brand {
+      flex: 0 1 auto;
+      min-width: 0;
+      padding-right: 0.25rem;
+    }
+
+    .oob-nav-dd--categories .oob-nav-dd-trigger {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .oob-nav-blog-mobile {
+      flex-shrink: 0;
+      padding-left: 0.35rem;
+      padding-right: 0.4rem;
+      min-height: 2.45rem;
+      font-size: 0.78rem;
+    }
+  }
+
+  .oob-nav-dd--locale .oob-nav-dd-panel {
+    min-width: 10.5rem;
+    max-height: min(70vh, 16rem);
+  }
+
+  .oob-nav-dd-link--current {
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--accent-dark, #0f766e);
+  }
+
+  .oob-nav-dd-link--external {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .oob-nav-dd-link--external-first {
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .oob-nav-dd-link--external:hover {
+    color: var(--accent-dark, #0f766e);
+    background: rgba(255, 30, 111, 0.06);
+  }
+
+  .oob-nav-dd-link--accent {
+    color: var(--oob-pink, #ff1e6f);
+  }
+
+  /* Mobile: language capsule + round menu (reference layout) */
+  .oob-nav-m-lang {
+    position: relative;
+  }
+
+  .oob-nav-m-lang > summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.62rem 0.35rem 0.48rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .oob-nav-m-lang > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .oob-nav-m-lang-code {
+    letter-spacing: 0.02em;
+  }
+
+  .oob-nav-m-lang-globe {
+    flex-shrink: 0;
+    color: var(--text);
+    opacity: 0.92;
+  }
+
+  .oob-nav-m-lang-panel {
+    right: 0;
+    left: auto;
+    min-width: 11rem;
+  }
+
+  .oob-nav-m-menu {
+    position: relative;
+  }
+
+  .oob-nav-m-menu > summary {
+    list-style: none;
+    width: 2.65rem;
+    height: 2.65rem;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 0;
+  }
+
+  .oob-nav-m-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .oob-nav-m-menu-panel {
+    position: absolute;
+    z-index: 110;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    left: auto;
+    width: min(17.5rem, calc(100vw - 1.5rem));
+    padding: 0.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    box-shadow:
+      0 14px 40px rgba(26, 27, 58, 0.14),
+      0 2px 8px rgba(26, 27, 58, 0.06);
+    max-height: min(70vh, 22rem);
+    overflow-y: auto;
+  }
+
+  .oob-nav-m-drawer-link {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    padding: 0.42rem 0.58rem;
+    border-radius: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .oob-nav-m-drawer-link:hover {
+    background: rgba(255, 30, 111, 0.06);
+    color: var(--oob-pink, #ff1e6f);
+  }
+
+  .oob-nav-m-drawer-link--accent {
+    color: var(--oob-pink, #ff1e6f);
+  }
+
+  @media (max-width: 389px) {
+    .oob-site-logo--litbuy {
+      width: 1.6rem;
+      height: 1.6rem;
+      max-width: 1.6rem;
+    }
+
+    .oob-nav-mobile-links {
+      gap: 0.25rem;
+    }
+
+    .oob-nav-m-lang > summary {
+      padding: 0.3rem 0.5rem 0.3rem 0.4rem;
+      font-size: 0.75rem;
+    }
+
+    .oob-nav-m-menu > summary {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .oob-nav-m-menu-panel {
+      width: 13rem;
+    }
+  }
+</style>

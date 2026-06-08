@@ -1,0 +1,130 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import {
+  BLOG_HUB_LINK_LABELS,
+  getBlogHubLinkHash,
+  getBlogHubLinkKind,
+  getBlogHubLinkSegment,
+} from '../lib/blogCatalogCrossLinkMap';
+import { litbuyCheckoutUrl, mlSpreadsheetLitbuyspreadsheet } from '../consts';
+
+interface Props {
+  locale?: string;
+  canonicalPath: string;
+}
+
+const { locale = 'en', canonicalPath } = Astro.props;
+
+const hubKind = getBlogHubLinkKind(canonicalPath);
+const hubSegment = getBlogHubLinkSegment(hubKind);
+const hubHash = getBlogHubLinkHash(hubKind);
+const hubHref = `${getRelativeLocaleUrl(locale, hubSegment)}${hubHash}`;
+const hubLabel = BLOG_HUB_LINK_LABELS[hubKind];
+const homeHref = getRelativeLocaleUrl(locale, '');
+const howToBuyHref = getRelativeLocaleUrl(locale, 'how-to-buy/');
+---
+
+<section class="blog-end-cta" aria-labelledby="blog-end-cta-heading">
+  <h2 id="blog-end-cta-heading" class="blog-end-cta__title">
+    Next: LitBuy Spreadsheet &amp; checkout prep
+  </h2>
+  <p class="blog-end-cta__lead">
+    {
+      hubKind === 'how-to-buy' ? (
+        <>
+          Ready to move from notes to links? Browse the{' '}
+          <a href={homeHref}>LitBuy Spreadsheet home</a>
+          {' '}for curated picks and category shortcuts, then follow the{' '}
+          <a href={hubHref}>{hubLabel}</a>
+          {' '}before you paste marketplace URLs into your{' '}
+          <a href={litbuyCheckoutUrl} target="_blank" rel="noopener noreferrer">LitBuy</a>
+          {' '}session—warehouse QC and shipping choices stay on LitBuy.
+        </>
+      ) : (
+        <>
+          Ready to move from notes to links? Open the LitBuy Spreadsheet catalogue (new tab), browse our{' '}
+          <a href={homeHref}>homepage picks</a>
+          {' '}and{' '}
+          <a href={hubHref}>{hubLabel}</a>
+          {' '}when you want curated rows, then walk through the{' '}
+          <a href={howToBuyHref}>how-to-buy guide</a>
+          {' '}before you paste marketplace URLs into LitBuy—warehouse QC and shipping choices stay on the agent console.
+        </>
+      )
+    }
+  </p>
+  <div class="cta-row blog-end-cta__actions">
+    <a
+      class="btn btn-primary"
+      href={mlSpreadsheetLitbuyspreadsheet}
+      target="_blank"
+      rel="noopener noreferrer">Open spreadsheet catalogue →</a
+    >
+    <a class="btn btn-ghost" href={homeHref}>LitBuy Spreadsheet home →</a>
+  </div>
+</section>
+
+<style>
+  .blog-end-cta {
+    margin: 2rem 0 0;
+    padding: 1.25rem 1.35rem 1.35rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--accent-soft, rgba(255, 30, 111, 0.08)) 0%, var(--surface) 42%);
+    box-shadow: 0 8px 24px rgba(26, 26, 26, 0.06);
+    text-align: center;
+  }
+
+  .blog-end-cta__title {
+    margin: 0 0 0.55rem;
+    font-size: 1.12rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .blog-end-cta__lead {
+    margin: 0 auto 1.1rem;
+    max-width: 42rem;
+    font-size: 0.94rem;
+    line-height: 1.62;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  .blog-end-cta__lead a {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .blog-end-cta__lead a:hover {
+    color: var(--accent);
+  }
+
+  .blog-end-cta__actions {
+    justify-content: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .blog-end-cta__actions .btn-primary {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.72rem 1.35rem;
+    font-size: 0.95rem;
+  }
+
+  .blog-end-cta__actions .btn-primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .blog-end-cta__actions .btn-ghost {
+    font-weight: 700;
+    padding: 0.72rem 1.25rem;
+    font-size: 0.95rem;
+  }
+</style>

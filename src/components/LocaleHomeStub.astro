@@ -1,0 +1,768 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import LitBuyHomeHero from './LitBuyHomeHero.astro';
+import SiteFooter from './SiteFooter.astro';
+import HotProductsGrid from './HotProductsGrid.astro';
+import HomeCategoryBanners from './HomeCategoryBanners.astro';
+import { defaultCommunityRedditUrl, litbuyCheckoutUrl, ml } from '../consts';
+import { homeCategoryBannersWithHrefs } from '../lib/homeCategoryBannersWithHrefs';
+import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
+import { getRecentBlogPosts } from '../lib/recentBlogPosts';
+import { getHomeRecentBlogCopy } from '../i18n/copy/homeRecentBlog';
+import { getHomeSpreadsheetPromoCopy } from '../i18n/copy/homeSpreadsheetPromo';
+import { getHomeHubIntroCopy } from '../i18n/copy/homeHubIntro';
+import { HTML_LANG_BY_ROUTE, ROUTE_LOCALES, type RouteLocale } from '../i18n/config';
+import type { HomeStubContent } from '../i18n/types';
+
+interface Props {
+  content: HomeStubContent;
+}
+
+const { content: c } = Astro.props;
+
+const locale = Astro.currentLocale ?? 'en';
+
+const homeCategoryBanners = homeCategoryBannersWithHrefs(locale);
+
+const redditHref = defaultCommunityRedditUrl;
+
+const CAT_ICON: Record<string, string> = {
+  shoes: '/category-icons/cat-shoes.png',
+  't-shirts': '/category-icons/cat-t-shirts.png',
+  pants: '/category-icons/cat-pants.png',
+  accessories: '/category-icons/cat-accessories.png',
+  bags: '/category-icons/cat-bags.png',
+  electronics: '/category-icons/cat-electronics.png',
+  jackets: '/category-icons/cat-jackets.png',
+  hoodies: '/category-icons/cat-hoodies.png',
+  headwear: '/category-icons/cat-headwear.png',
+  jersey: '/category-icons/cat-jersey.png',
+  perfume: '/category-icons/cat-perfume.png',
+  other: '/category-icons/cat-other.png',
+};
+
+const browseMlRoot = ml.replace(/\/$/, '');
+
+const routeLocale = (ROUTE_LOCALES as readonly string[]).includes(locale)
+  ? (locale as RouteLocale)
+  : ('en' as RouteLocale);
+const recentBlogPosts = getRecentBlogPosts(5);
+const blogRecent = getHomeRecentBlogCopy(locale);
+const blogIndexHref = getRelativeLocaleUrl(locale, 'blog');
+const blogDateLocale = routeLocale === 'pt' ? 'pt-BR' : HTML_LANG_BY_ROUTE[routeLocale];
+
+function formatIsoDate(iso: string): string {
+  try {
+    const d = new Date(`${iso}T12:00:00`);
+    return new Intl.DateTimeFormat(blogDateLocale, { dateStyle: 'medium' }).format(d);
+  } catch {
+    return iso;
+  }
+}
+
+const blogFreshIso = recentBlogPosts[0]?.published ?? '';
+
+const howToBuyHref = getRelativeLocaleUrl(locale, 'how-to-buy');
+const spreadsheetGuideHref = `${howToBuyHref}#spreadsheet-guide`;
+const aboutHref = getRelativeLocaleUrl(locale, 'about');
+const spreadsheetPromo = getHomeSpreadsheetPromoCopy(locale);
+const hubIntro = getHomeHubIntroCopy(locale);
+---
+
+<LitBuyHomeHero locale={locale} content={c.hero} />
+
+<main class="home-main-centered">
+  <HotProductsGrid />
+
+  <section id="curated-directory" class="band-alt category-explore" aria-labelledby="explore-heading">
+    <div class="wrap">
+      <div class="page-mast">
+        <HomeCategoryBanners banners={homeCategoryBanners} />
+        <h2 id="explore-heading" class="category-explore-title">{c.exploreTitle}</h2>
+        <div class="cat-icon-grid" role="navigation" aria-label={c.categoriesAria}>
+          {
+            c.categoryPills.map((cat, ci) => (
+              <a
+                class="cat-icon-link"
+                href={litrepstarCategoryUrl(cat.id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${cat.label} — opens Litrepstar catalogue in a new tab`}
+              >
+                <img
+                  class="cat-icon-img"
+                  src={CAT_ICON[cat.id]}
+                  alt={cat.imgAlt}
+                  width="84"
+                  height="84"
+                  loading={ci < 3 ? 'eager' : 'lazy'}
+                  fetchpriority={ci === 0 ? 'high' : undefined}
+                  decoding="async"
+                />
+                <span class="cat-icon-label">{cat.label}</span>
+              </a>
+            ))
+          }
+        </div>
+
+        <div class="category-below-icon">
+          <a class="category-below-icon-link" href={redditHref} target="_blank" rel="noopener noreferrer" aria-label={c.redditAria}>
+            <img
+              class="category-below-icon-img"
+              src="/reddit-snoo.png"
+              width="52"
+              height="52"
+              alt={c.redditSnooAlt}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </div>
+
+        <div class="home-feed-row">
+          <nav class="home-feed-row__col home-recent-blog" aria-labelledby="recent-blog-heading">
+            <div class="home-recent-feed-panel">
+              <div class="home-recent-feed-panel__mast">
+                <h3 id="recent-blog-heading" class="home-recent-blog__heading">{blogRecent.heading}</h3>
+                {
+                  blogFreshIso ? (
+                    <p class="home-recent-feed-panel__fresh">
+                      <span class="home-recent-feed-panel__fresh-label">{blogRecent.lastUpdatedLabel}</span>
+                      <span class="home-recent-feed-panel__fresh-sep" aria-hidden="true">
+                        {' · '}
+                      </span>
+                      <time class="home-recent-feed-panel__fresh-date" datetime={blogFreshIso}>
+                        {formatIsoDate(blogFreshIso)}
+                      </time>
+                    </p>
+                  ) : null
+                }
+              </div>
+              {
+                blogRecent.englishArticlesNote ? (
+                  <p class="home-recent-blog__lang-note">{blogRecent.englishArticlesNote}</p>
+                ) : null
+              }
+              {
+                recentBlogPosts.length > 0 ? (
+                  <ol class="home-recent-blog__list">
+                    {
+                      recentBlogPosts.map((post, bi) => (
+                        <li class="home-recent-blog__item">
+                          <a class="home-recent-blog__link" href={`/blog/${post.slug}/`}>
+                            <span class="home-recent-blog__title-line">
+                              <span class="home-recent-blog__title">{post.title}</span>
+                              {bi < 3 ? (
+                                <span class="home-feed-new-badge" aria-hidden="true">{blogRecent.newBadge}</span>
+                              ) : null}
+                            </span>
+                            <time class="home-recent-blog__date" datetime={post.published}>
+                              {formatIsoDate(post.published)}
+                            </time>
+                          </a>
+                        </li>
+                      ))
+                    }
+                  </ol>
+                ) : (
+                  <p class="home-recent-blog__empty">{blogRecent.emptyNote}</p>
+                )
+              }
+              <p class="home-recent-blog__footer">
+                <a class="home-recent-blog__all" href={blogIndexHref}>{blogRecent.viewAll}</a>
+              </p>
+            </div>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="band-alt home-spreadsheet-promo" aria-labelledby="spreadsheet-promo-heading">
+    <div class="wrap">
+      <div class="page-mast home-spreadsheet-promo__card">
+        <h2 id="spreadsheet-promo-heading" class="home-spreadsheet-promo__title">{spreadsheetPromo.title}</h2>
+        <p class="home-spreadsheet-promo__body">{spreadsheetPromo.body}</p>
+        <ul class="home-spreadsheet-promo__bullets">
+          {spreadsheetPromo.bullets.map((b) => (
+            <li>{b}</li>
+          ))}
+        </ul>
+        <p class="home-spreadsheet-promo__cta">
+          <a class="btn btn-primary" href={spreadsheetGuideHref}>{spreadsheetPromo.ctaSpreadsheet}</a>
+          <a class="btn btn-ghost" href={howToBuyHref}>{spreadsheetPromo.ctaHowToBuy}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-alt guide" aria-labelledby="guide-heading" id="litbuyspreadsheet-spreadsheet-guide">
+    <div class="wrap">
+      <div class="page-mast">
+        {
+          c.guideH2 ? (
+            <>
+              <h2 id="guide-heading" class="guide-section-title">{c.guideH2}</h2>
+              {c.guideIntro ? <p class="section-intro guide-section-lede">{c.guideIntro}</p> : null}
+            </>
+          ) : (
+            <h2 id="guide-heading" class="visually-hidden">Guide</h2>
+          )
+        }
+        <div class="guide-accordion">
+          {
+            c.sections.map((sec, si) => (
+              <details class="guide-details" open={si === 0 ? true : undefined}>
+                <summary class="guide-summary">
+                  <h3>{sec.h3}</h3>
+                  <span class="guide-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-9"/></svg>
+                  </span>
+                </summary>
+                <div class="guide-content">
+                  {sec.paragraphs.map((p) => (
+                    <p>{p}</p>
+                  ))}
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="spreadsheet" class="band-alt" aria-labelledby="cta-heading">
+    <div class="wrap">
+      <div class="page-mast">
+        <h2 id="cta-heading">{c.ctaHeading}</h2>
+        <p class="section-intro">
+          {c.ctaIntro}{' — '}
+          <a href={browseMlRoot} target="_blank" rel="noopener noreferrer">
+            {c.sheetLinkLabel}
+          </a>
+          {c.ctaIntroSuffix ?? ''}
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={browseMlRoot} target="_blank" rel="noopener noreferrer">{c.hero.ctaBrowse}</a>
+          <a class="btn btn-ghost" href={litbuyCheckoutUrl} target="_blank" rel="noopener noreferrer">
+            {c.hero.ctaLogin}
+          </a>
+        </div>
+        <p class="section-intro" style="margin-top:1rem;">
+          {c.ctaFooterNote}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band-alt home-hub-intro" aria-labelledby="home-hub-intro-heading">
+    <div class="wrap">
+      <div class="page-mast home-hub-intro__inner">
+        <h2 id="home-hub-intro-heading" class="home-hub-intro__title">{hubIntro.title}</h2>
+        {hubIntro.paragraphs.map((p) => (
+          <p class="home-hub-intro__p">{p}</p>
+        ))}
+        <p class="home-hub-intro__links">
+          <a href={howToBuyHref}>How to buy</a>
+          <span aria-hidden="true"> · </span>
+          <a href={spreadsheetGuideHref}>LitBuy Spreadsheet guide</a>
+          <span aria-hidden="true"> · </span>
+          <a href={aboutHref}>About this site</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<SiteFooter
+  locale={locale}
+  disclaimerTitle={c.footer.disclaimerLabel}
+  disclaimerHtml={c.footer.disclaimerHtml}
+  copyrightLine={c.footer.copyrightLine}
+/>
+
+<style>
+  .home-main-centered .wrap {
+    text-align: center;
+  }
+  .home-main-centered h2 {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 52rem;
+  }
+  .home-main-centered .section-intro {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-main-centered .guide h3 {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 52rem;
+  }
+  .home-main-centered .guide p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-main-centered .cta-row {
+    justify-content: center;
+  }
+
+  .home-main-centered .guide h3 + p + p {
+    margin-top: 0.65rem;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .home-hub-intro__inner {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: left;
+  }
+
+  .home-hub-intro__title {
+    margin: 0 0 1rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .home-hub-intro__p {
+    margin: 0 0 1rem;
+    font-size: 0.975rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .home-hub-intro__p:last-of-type {
+    margin-bottom: 1.15rem;
+  }
+
+  .home-hub-intro__links {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .home-hub-intro__links a {
+    color: var(--accent-dark);
+    text-decoration: none;
+  }
+
+  .home-hub-intro__links a:hover {
+    text-decoration: underline;
+  }
+
+  .home-spreadsheet-promo__card {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: left;
+    padding: clamp(1.15rem, 3vw, 1.5rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+  }
+
+  .home-spreadsheet-promo__title {
+    margin: 0 0 0.65rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .home-spreadsheet-promo__body {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .home-spreadsheet-promo__bullets {
+    margin: 0 0 1.25rem;
+    padding-left: 1.25rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .home-spreadsheet-promo__bullets li {
+    margin-bottom: 0.35rem;
+  }
+
+  .home-spreadsheet-promo__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: center;
+    margin: 0;
+  }
+
+  .guide-section-title {
+    margin-bottom: 0.65rem;
+  }
+
+  .guide-section-lede {
+    margin-bottom: 1.5rem;
+    max-width: 42rem;
+  }
+
+  /* Guide Accordion */
+  .guide-accordion {
+    margin-top: 2rem;
+    text-align: left;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .guide-details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .guide-details[open] {
+    border-color: var(--accent-dark);
+  }
+
+  .guide-summary {
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+
+  .guide-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .guide-summary h3 {
+    margin: 0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .guide-icon {
+    color: var(--muted);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .guide-details[open] .guide-icon {
+    transform: rotate(180deg);
+    color: var(--accent-dark);
+  }
+
+  .guide-content {
+    padding: 0 1.5rem 1.5rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .guide-content p {
+    margin: 0;
+  }
+
+  .guide-content p + p {
+    margin-top: 1rem;
+  }
+
+  /* exploreKicker splitter may leave dangling text — keep simple underline link */
+
+  /* Blog + Buyer shares row — after category copy + Reddit icon */
+
+  .home-feed-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 3vw, 1.35rem);
+    margin-top: 1.65rem;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    max-width: min(52rem, 100%);
+    margin-inline: auto;
+  }
+
+  .home-feed-row__col {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  @media (min-width: 768px) {
+    .home-feed-row__col {
+      flex: 1 1 calc(50% - 0.75rem);
+      max-width: calc(50% - 0.675rem);
+    }
+  }
+
+  .home-recent-feed-panel {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin-inline: auto;
+    text-align: center;
+    padding: clamp(1rem, 3vw, 1.2rem) clamp(1rem, 3.5vw, 1.35rem) clamp(1.05rem, 3vw, 1.25rem);
+    background: var(--surface);
+    border: 1px solid rgba(232, 232, 240, 0.98);
+    border-radius: 0.85rem;
+    box-shadow:
+      0 10px 28px rgba(26, 26, 26, 0.06),
+      0 2px 8px rgba(26, 26, 26, 0.04);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-recent-blog__heading,
+  .home-recent-buyer-shares__heading {
+    margin: 0;
+    font-size: clamp(1.05rem, 2.6vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .home-recent-feed-panel__mast {
+    margin-bottom: 0.65rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+  }
+
+  .home-recent-feed-panel__fresh {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+  }
+
+  .home-recent-feed-panel__fresh-label {
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .home-recent-feed-panel__fresh-date {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .home-recent-blog__title-line,
+  .home-recent-buyer-shares__title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .home-feed-new-badge {
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.14rem 0.42rem;
+    border-radius: 4px;
+    background: rgba(255, 30, 111, 0.12);
+    color: var(--accent-dark, #e91362);
+    border: 1px solid rgba(255, 30, 111, 0.22);
+    line-height: 1;
+  }
+
+  .home-recent-blog__lang-note,
+  .home-recent-buyer-shares__lang-note {
+    margin: 0 0 0.85rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .home-recent-blog__empty {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0.5rem 0.05rem 0.25rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .home-recent-blog__list,
+  .home-recent-buyer-shares__list {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+  }
+
+  .home-recent-blog__item,
+  .home-recent-buyer-shares__item {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(232, 232, 240, 0.95);
+  }
+
+  .home-recent-blog__item:last-of-type,
+  .home-recent-buyer-shares__item:last-of-type {
+    border-bottom: none;
+  }
+
+  .home-recent-blog__link,
+  .home-recent-buyer-shares__link {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0.72rem 0.05rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 0.35rem;
+    margin-inline: -0.15rem;
+    padding-left: 0.15rem;
+    padding-right: 0.15rem;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .home-recent-blog__link:hover,
+  .home-recent-buyer-shares__link:hover {
+    background: rgba(255, 30, 111, 0.06);
+    color: var(--accent-dark, #e91362);
+  }
+
+  .home-recent-blog__title,
+  .home-recent-buyer-shares__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.38;
+  }
+
+  .home-recent-buyer-shares__sub {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.35;
+    text-align: left;
+  }
+
+  .home-recent-blog__date,
+  .home-recent-buyer-shares__date {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .home-recent-blog__footer,
+  .home-recent-buyer-shares__footer {
+    margin: 1rem 0 0;
+    text-align: center;
+  }
+
+  .home-recent-blog__all,
+  .home-recent-buyer-shares__all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+    text-decoration: none;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .home-recent-blog__all:hover,
+  .home-recent-buyer-shares__all:hover {
+    background: var(--accent-soft, rgba(255, 30, 111, 0.08));
+    border-color: rgba(255, 30, 111, 0.22);
+  }
+
+  .home-spreadsheet-promo {
+    padding: clamp(2rem, 5vw, 2.75rem) 0;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .home-spreadsheet-promo__title {
+    margin: 0 auto 0.65rem;
+    font-size: clamp(1.2rem, 3vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    max-width: 44rem;
+  }
+
+  .home-spreadsheet-promo__intro {
+    margin-bottom: 1rem !important;
+    max-width: 46rem !important;
+  }
+
+  .home-spreadsheet-promo__bullets {
+    margin: 0 auto 1.25rem;
+    padding: 0;
+    list-style: none;
+    max-width: 40rem;
+    text-align: left;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .home-spreadsheet-promo__bullet {
+    position: relative;
+    margin: 0 0 0.55rem;
+    padding-left: 1.15rem;
+  }
+
+  .home-spreadsheet-promo__bullet::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 999px;
+    background: var(--oob-pink, #ff1e6f);
+    opacity: 0.85;
+  }
+
+  .home-spreadsheet-promo__bullet:last-child {
+    margin-bottom: 0;
+  }
+
+  .home-spreadsheet-promo__ctas {
+    margin-top: 0.15rem;
+  }
+</style>

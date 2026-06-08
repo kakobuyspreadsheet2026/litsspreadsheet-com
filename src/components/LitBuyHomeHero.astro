@@ -1,0 +1,391 @@
+---
+import SiteHeader from './SiteHeader.astro';
+import LitrepstarSearchBar from './LitrepstarSearchBar.astro';
+import {
+  litbuyCheckoutUrl,
+  litbuyspreadsheetHomeHeroBannerUrl,
+  litbuyspreadsheetHomeHeroMobileBannerUrl,
+  ml,
+  mlSpreadsheetLitbuyspreadsheet,
+  siteDomain,
+} from '../consts';
+
+import type { HomeStubContent } from '../i18n/types';
+
+interface Props {
+  locale?: string;
+  content?: HomeStubContent['hero'];
+}
+
+const { locale: localeProp, content } = Astro.props;
+const locale =
+  typeof localeProp === 'string' && localeProp.length > 0
+    ? localeProp
+    : (Astro.currentLocale ?? 'en');
+
+// Fallback to hardcoded English if content not provided (though we should always provide it)
+const c = content ?? {
+  h1: 'LitBuy Spreadsheet · 2026 desk',
+  tagline: 'Find listings here—buy and QC on LitBuy',
+  kicker: '2026 · LitBuy Spreadsheet · indexed catalogue · Taobao · Weidian · 1688',
+  body:
+    `LitBuy Spreadsheet discovery starts on ${siteDomain}: scan categories and keywords, open durable marketplace pages across Taobao, Weidian & 1688, then hand a clean listing URL to LitBuy for checkout and warehouse photography. ${siteDomain} is only the browse layer—carting, fees, and shipment approvals stay on litbuy.com.`,
+  ctaBrowse: 'Open LitBuy Spreadsheet catalogue →',
+  ctaLogin: 'Continue on LitBuy',
+  heroPlaneAlt: `LitBuy Spreadsheet hero banner — ${siteDomain}`,
+  searchAria: 'search spreadsheet',
+  searchPlaceholder: 'Search products, brands, styles...',
+  searchByImage: 'Search by Image',
+  searchSubmit: 'Search',
+  searchByImageAria: 'search by image',
+};
+
+---
+
+<section id="top" class="kb-home" aria-label="LitBuy Spreadsheet hub hero">
+  <div class="wrap kb-home__mast">
+    <SiteHeader embedded locale={locale} />
+  </div>
+
+  <div
+    class="kb-banner"
+    style={`--kb-hero-photo: url(${JSON.stringify(litbuyspreadsheetHomeHeroBannerUrl)}); --kb-hero-mobile-photo: url(${JSON.stringify(litbuyspreadsheetHomeHeroMobileBannerUrl)})`}
+    role="img"
+    aria-label={c.heroPlaneAlt}
+  >
+    <div class="kb-banner__inner wrap">
+      <h1 class="kb-banner__h1">
+        <span class="kb-banner__line">{c.h1}</span>
+        <span class="kb-banner__meta">{c.kicker}</span>
+      </h1>
+      <p class="kb-banner__desc">
+        {c.body}
+      </p>
+      <LitrepstarSearchBar
+        mlBase={ml}
+        variant="litbuyHero"
+        placeholder={c.searchPlaceholder}
+        searchAria={c.searchAria}
+        searchSubmitLabel={c.searchSubmit}
+        searchByImageLabel={c.searchByImage}
+        searchByImageAria={c.searchByImageAria}
+      />
+      <div class="kb-banner__ctas">
+        <a
+          class="kb-banner__cta kb-banner__cta--primary"
+          href={mlSpreadsheetLitbuyspreadsheet}
+          target="_blank"
+          rel="noopener noreferrer">{c.ctaBrowse}</a
+        >
+        <a
+          class="kb-banner__cta kb-banner__cta--ghost"
+          href={litbuyCheckoutUrl}
+          target="_blank"
+          rel="noopener noreferrer">{c.ctaLogin}</a
+        >
+      </div>
+      <div class="kb-mobile-ctas">
+        <a
+          class="kb-mobile-cta kb-mobile-cta--primary"
+          href={ml}
+          target="_blank"
+          rel="noopener noreferrer">spreadsheet</a
+        >
+        <a
+          class="kb-mobile-cta kb-mobile-cta--ghost"
+          href={litbuyCheckoutUrl}
+          target="_blank"
+          rel="noopener noreferrer">litbuy</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kb-home {
+    margin: 0;
+    padding: 0;
+    font-family: Inter, system-ui, sans-serif;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Match oopbuyai embedded header */
+  .kb-home__mast :global(.oob-site-header--embedded) {
+    margin-bottom: 0;
+  }
+
+  .kb-banner {
+    /* Photo URL from inline --kb-hero-photo; stacking order = top overlay → bottom photo */
+    background-color: #3d4558;
+    background-image:
+      radial-gradient(
+        ellipse 135% 95% at 50% -18%,
+        rgba(255, 248, 236, 0.42) 0%,
+        rgba(255, 236, 210, 0.14) 42%,
+        transparent 68%
+      ),
+      radial-gradient(
+        ellipse 70% 55% at 82% 38%,
+        rgba(255, 220, 180, 0.18) 0%,
+        transparent 58%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(32, 38, 54, 0.06) 0%,
+        rgba(22, 26, 40, 0.18) 48%,
+        rgba(14, 16, 26, 0.34) 100%
+      ),
+      var(--kb-hero-photo);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    padding: clamp(2.5rem, 6vw, 4.25rem) 0 clamp(3rem, 7vw, 4.75rem);
+  }
+
+  /** Phones: lighten overlays so hero photography stays readable behind headline copy */
+  @media (max-width: 640px) {
+    .kb-banner {
+      background-image:
+        radial-gradient(
+          ellipse 130% 90% at 50% -16%,
+          rgba(255, 248, 236, 0.52) 0%,
+          rgba(255, 236, 210, 0.22) 46%,
+          transparent 72%
+        ),
+        radial-gradient(
+          ellipse 75% 50% at 85% 40%,
+          rgba(255, 210, 160, 0.26) 0%,
+          transparent 62%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(22, 28, 44, 0.07) 0%,
+          rgba(18, 22, 36, 0.42) 45%,
+          rgba(10, 12, 22, 0.62) 100%
+        ),
+        var(--kb-hero-photo);
+      background-position:
+        center,
+        center,
+        center,
+        center top;
+      padding-top: clamp(1.75rem, 7vw, 2.75rem);
+    }
+  }
+
+  .kb-banner__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: min(56rem, 100%);
+    margin-inline: auto;
+  }
+
+  .kb-banner__h1 {
+    margin: 0 0 1rem;
+    max-width: 48rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.14;
+  }
+
+  .kb-banner__line {
+    display: block;
+    font-size: clamp(1.75rem, 4.5vw, 2.65rem);
+    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .kb-banner__tagline {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .kb-banner__meta {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: clamp(0.78rem, 1.65vw, 0.9rem);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.78);
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  .kb-banner__desc {
+    margin: 0 0 1.35rem;
+    max-width: 42rem;
+    font-size: clamp(0.9rem, 1.85vw, 1.05rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.28);
+  }
+
+  @media (max-width: 640px) {
+    .kb-banner__desc {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .kb-banner__desc strong {
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .kb-banner__inline-link {
+    color: #fff;
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.15em;
+  }
+
+  .kb-banner__inline-link:hover {
+    color: #ffe8dc;
+  }
+
+  .kb-banner__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .kb-banner__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.85rem;
+    padding: 0.55rem 1.35rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition:
+      filter 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .kb-banner__cta--primary {
+    background: #fc6536;
+    color: #fff;
+    border: 2px solid transparent;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+  }
+
+  .kb-banner__cta--primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .kb-banner__cta--ghost {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+  }
+
+  .kb-banner__cta--ghost:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #fff;
+  }
+
+  .kb-banner :global(.ml-search-bar) {
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  /* Mobile-only CTAs — separate class so desktop `.kb-banner__ctas` is untouched */
+  .kb-mobile-ctas {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .kb-home__mast :global(.oob-site-header--embedded) {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: saturate(140%) blur(10px);
+      -webkit-backdrop-filter: saturate(140%) blur(10px);
+    }
+
+    .kb-banner {
+      background-color: #f7f2ec;
+      background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 248, 242, 0.35) 100%),
+        var(--kb-hero-mobile-photo);
+      color: var(--text);
+      padding: clamp(1.25rem, 4vw, 1.75rem) 0 clamp(1.5rem, 5vw, 2.25rem);
+    }
+
+    .kb-banner__line {
+      font-size: clamp(1.45rem, 6vw, 1.85rem);
+      color: #141820;
+      text-shadow: none;
+    }
+
+    .kb-banner__meta {
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: #5c6478;
+      text-shadow: none;
+    }
+
+    .kb-banner__desc {
+      font-size: 0.875rem;
+      color: #3a4150;
+      text-shadow: none;
+    }
+
+    .kb-banner__ctas {
+      display: none;
+    }
+
+    .kb-mobile-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      margin-top: 0.35rem;
+    }
+
+    .kb-mobile-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.15rem;
+      padding: 0.32rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+
+    .kb-mobile-cta--primary {
+      background: #fc6536;
+      color: #fff;
+      border: 1.5px solid transparent;
+      box-shadow: 0 4px 14px rgba(252, 101, 54, 0.18);
+    }
+
+    .kb-mobile-cta--ghost {
+      background: rgba(255, 255, 255, 0.72);
+      color: #1a1f2b;
+      border: 1.5px solid rgba(26, 31, 43, 0.18);
+    }
+  }
+</style>

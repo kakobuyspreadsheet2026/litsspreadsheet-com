@@ -1,0 +1,218 @@
+---
+import litrepstarHome from '../data/litrepstarHomePicks.json';
+import { spreadsheetProductPickAlt } from '../lib/spreadsheetImageAlt';
+
+interface LitrepstarPick {
+  slug: string;
+  title: string;
+  alt: string;
+  href: string;
+  imageLocal: string;
+  imageRemote?: string;
+  priceUsd?: number;
+  categoryLabel?: string;
+}
+
+/** Desktop keeps the full grid; mobile defers cards beyond this count until "Show more". */
+const MOBILE_INITIAL_COUNT = 24;
+
+const displayProducts = (litrepstarHome.products as LitrepstarPick[]).slice(0, 60);
+const mobileDeferredCount = Math.max(0, displayProducts.length - MOBILE_INITIAL_COUNT);
+
+function pickImage(p: LitrepstarPick): string {
+  return p.imageLocal || p.imageRemote || '';
+}
+---
+
+<section id="trending-picks" class="hot-products-grid" data-hot-products-grid>
+  <div class="wrap">
+    <header class="section-head">
+      <h2 class="section-title">LitBuy Spreadsheet: Trending Picks</h2>
+      <p class="section-sub">
+        Synced from{' '}
+        <a href="https://litrepstar.com/en" target="_blank" rel="noopener noreferrer">Litrepstar</a>
+        {' '}— mixed brands and categories. Open a pick, copy the marketplace link, paste into LitBuy.
+      </p>
+    </header>
+
+    <div class="products-grid">
+      {displayProducts.map((p, index) => (
+        <a
+          href={p.href}
+          class:list={[
+            'product-card',
+            index >= MOBILE_INITIAL_COUNT && 'product-card--mobile-deferred',
+          ]}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="img-container">
+            <img
+              src={pickImage(p)}
+              alt={spreadsheetProductPickAlt(p.title, p.categoryLabel)}
+              loading="lazy"
+              decoding="async"
+              width="300"
+              height="300"
+              referrerpolicy="no-referrer"
+            />
+          </div>
+          <div class="product-info">
+            {p.categoryLabel ? <span class="product-category">{p.categoryLabel}</span> : null}
+            <h3 class="product-title">{p.title}</h3>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {
+      mobileDeferredCount > 0 ? (
+        <p class="hot-products-more-wrap">
+          <button type="button" class="hot-products-more-btn" data-hot-products-more>
+            Show {mobileDeferredCount} more picks
+          </button>
+        </p>
+      ) : null
+    }
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-hot-products-more]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const grid = btn.closest('[data-hot-products-grid]');
+      grid?.querySelectorAll('.product-card--mobile-deferred').forEach((el) => {
+        el.classList.remove('product-card--mobile-deferred');
+      });
+      btn.closest('.hot-products-more-wrap')?.remove();
+    });
+  });
+</script>
+
+<style>
+  .hot-products-grid {
+    padding: clamp(1.5rem, 4vw, 2.25rem) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-head {
+    margin-bottom: 1.25rem;
+    text-align: center;
+  }
+
+  .section-title {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.2rem, 3vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .section-sub {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .section-sub a {
+    font-weight: 600;
+    color: var(--accent-dark);
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.85rem;
+  }
+
+  @media (min-width: 640px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    overflow: hidden;
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .product-card:hover {
+    border-color: rgba(255, 30, 111, 0.25);
+    box-shadow: 0 6px 18px rgba(26, 26, 26, 0.06);
+  }
+
+  .img-container {
+    aspect-ratio: 1;
+    background: #f4f4f8;
+    overflow: hidden;
+  }
+
+  .img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-info {
+    padding: 0.55rem 0.6rem 0.65rem;
+  }
+
+  .product-category {
+    display: inline-block;
+    margin: 0 0 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .product-title {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 639px) {
+    .product-card--mobile-deferred {
+      display: none;
+    }
+  }
+
+  .hot-products-more-wrap {
+    margin: 1.1rem 0 0;
+    text-align: center;
+  }
+
+  .hot-products-more-btn {
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    cursor: pointer;
+  }
+
+  .hot-products-more-btn:hover {
+    background: var(--accent-soft, rgba(255, 30, 111, 0.08));
+  }
+</style>

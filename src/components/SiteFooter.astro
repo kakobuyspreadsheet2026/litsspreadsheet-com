@@ -1,0 +1,58 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { normalizeRouteLocale } from '../i18n/config';
+import { footerAboutLinkLabel } from '../i18n/copy/footerAboutLink';
+import { litbuyCheckoutUrl, mlSpreadsheetLitbuyspreadsheet, siteDomain } from '../consts';
+
+interface Props {
+  /** Used for localized About link target (defaults to English hub home locale). */
+  locale?: string;
+  disclaimerTitle?: string;
+  /** Raw HTML for the disclaimer body (trusted, from i18n bundles). */
+  disclaimerHtml?: string;
+  copyrightLine?: string;
+}
+
+const {
+  locale: localeProp,
+  disclaimerTitle = 'Disclaimer:',
+  disclaimerHtml,
+  copyrightLine = `© 2026 ${siteDomain} · Editorial notes only—carts, payouts, and freight approvals stay off-domain.`,
+} = Astro.props;
+
+const locale = normalizeRouteLocale(localeProp);
+const aboutHref = getRelativeLocaleUrl(locale, 'about');
+const aboutLabel = footerAboutLinkLabel[locale] ?? footerAboutLinkLabel.en;
+
+const defaultDisclaimerHtml = `${siteDomain} publishes <strong>LitBuy Spreadsheet</strong> context only: think explainers, catalogue entry points, and cautionary notes—not checkout. Outbound targets such as the <a href="${mlSpreadsheetLitbuyspreadsheet}" target="_blank" rel="noopener noreferrer">Spreadsheet browse bridge</a>, Chinese marketplaces, and <a href="${litbuyCheckoutUrl}" target="_blank" rel="noopener noreferrer">litbuy.com</a> operate independently; we never custody payments or parcels. Cross-check QC imagery and seller policies personally. No endorsement relationship with LitBuy or linked merchants—follow each platform’s binding policies.`;
+---
+
+<footer>
+  <div class="wrap">
+    <div class="page-mast">
+      <p class="footer-about-line">
+        <a class="footer-about-link" href={aboutHref}>{aboutLabel}</a>
+      </p>
+      <p>
+        <strong>{disclaimerTitle}</strong>{' '}
+        <span set:html={disclaimerHtml ?? defaultDisclaimerHtml} />
+      </p>
+      <p style="margin-top:1rem;">{copyrightLine}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-about-line {
+    margin: 0 0 0.65rem;
+    font-size: 0.875rem;
+  }
+  .footer-about-link {
+    font-weight: 600;
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+  .footer-about-link:hover {
+    text-decoration: underline;
+  }
+</style>

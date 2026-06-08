@@ -1,0 +1,46 @@
+---
+import BlogArticleShell from '../../components/BlogArticleShell.astro';
+import blogPosts from '../../data/blogPosts.json';
+import { getBlogArticleContent } from '../../data/blogArticles';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return (blogPosts as { slug: string }[]).map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const content = getBlogArticleContent(post.slug);
+
+if (!content) {
+  throw new Error(`Missing blog article content for slug: ${post.slug}`);
+}
+
+const canonicalPath = `/blog/${post.slug}`;
+const layoutTitle = `${content.headline} | litsspreadsheet.com`;
+
+function formatDisplayDate(iso: string): string {
+  try {
+    const d = new Date(`${iso}T12:00:00`);
+    return new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(d);
+  } catch {
+    return iso;
+  }
+}
+---
+
+<BlogArticleShell
+  title={layoutTitle}
+  description={post.description}
+  canonicalPath={canonicalPath}
+  headline={content.headline}
+  publishedISO={post.published}
+  displayDate={formatDisplayDate(post.published)}
+  structuredKeywords={content.structuredKeywords}
+>
+  <p class="blog-lede" slot="lede" set:html={content.ledeHtml} />
+  <div set:html={content.bodyHtml} />
+</BlogArticleShell>

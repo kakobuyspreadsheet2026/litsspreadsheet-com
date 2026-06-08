@@ -1,0 +1,38 @@
+---
+/**
+ * Intermediate page so the promo strip can link to Same-Origin (/join/discord).
+ * Many blockers hide elements whose href points at discord.* — this avoids that pattern.
+ */
+import { defaultLitbuyspreadsheetDiscordUrl } from '../../consts';
+import { absoluteCanonicalUrl } from '../../lib/canonicalPath';
+
+export const prerender = true;
+
+const target =
+  typeof import.meta.env.PUBLIC_LITBUY_DISCORD_URL === 'string'
+    ? import.meta.env.PUBLIC_LITBUY_DISCORD_URL.trim()
+    : '';
+const discordUrl = target || defaultLitbuyspreadsheetDiscordUrl;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Join the LitBuy Spreadsheet community hub on Discord—share Taobao / Weidian finds, QC checks, and paste-to-LitBuy workflow tips. Redirects to the live Discord invite."
+    />
+    <meta http-equiv="refresh" content={`0;url=${discordUrl}`} />
+    <title>Redirecting…</title>
+    <link rel="canonical" href={absoluteCanonicalUrl('/join/discord', Astro.site)} />
+  </head>
+  <body
+    style="margin:0;font-family:system-ui,sans-serif;padding:2rem;background:#f6f6fb;color:#1a1a1a;line-height:1.5"
+  >
+    <p style="margin:0 0 0.75rem">Redirecting to Discord…</p>
+    <p style="margin:0">
+      If nothing happens, <a href={discordUrl} style="color:#e91362">open the invite manually</a>.
+    </p>
+  </body>
+</html>

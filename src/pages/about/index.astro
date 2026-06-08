@@ -1,0 +1,51 @@
+---
+import { absoluteCanonicalUrl } from '../../lib/canonicalPath';
+
+import Layout from '../../layouts/Layout.astro';
+import AboutPageBody from '../../components/pages/AboutPageBody.astro';
+import { siteStructuredDataIds, siteOrigin } from '../../consts';
+import { getAboutPageCopy } from '../../i18n/copy/aboutPage';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { HTML_LANG_BY_ROUTE } from '../../i18n/config';
+import { breadcrumbListLd } from '../../lib/breadcrumbSchema';
+
+export const prerender = true;
+
+const locale = 'en';
+const canonicalPath = '/about';
+const copy = getAboutPageCopy(locale);
+const homeHref = getRelativeLocaleUrl(locale, '');
+
+const origin = Astro.site?.origin ?? siteOrigin;
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+const homeAbs = new URL(homeHref, Astro.site).href;
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  '@id': `${pageUrl}#webpage`,
+  name: copy.title,
+  url: pageUrl,
+  description: copy.description,
+  inLanguage: HTML_LANG_BY_ROUTE[locale],
+  isPartOf: { '@id': websiteId },
+  keywords: copy.keywords,
+};
+
+const breadcrumbLd = breadcrumbListLd([
+  { name: copy.breadcrumbHomeLabel, url: homeAbs },
+  { name: copy.h1, url: pageUrl },
+]);
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  i18nRouteSegment="about"
+  jsonLd={[webPageLd, breadcrumbLd]}
+>
+  <AboutPageBody locale={locale} copy={copy} homeHref={homeHref} />
+</Layout>

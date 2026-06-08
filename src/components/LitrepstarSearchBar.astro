@@ -1,0 +1,428 @@
+---
+interface Props {
+  /** Catalogue locale base URL for LitBuy Spreadsheet search (no trailing slash). */
+  mlBase: string;
+  /** Large orange LitBuy-style hero strip (full catalogue search). */
+  variant?: 'default' | 'litbuyHero';
+  ariaLabel?: string;
+  placeholder?: string;
+  searchSubmitLabel?: string;
+  searchByImageLabel?: string;
+  searchByImageAria?: string;
+  searchByImageTitle?: string;
+}
+
+const {
+  mlBase,
+  variant = 'default',
+  ariaLabel = 'litbuy spreadsheet · search LitBuy Spreadsheet catalogue',
+  placeholder = 'Search products, brands, styles...',
+  searchSubmitLabel = 'Search',
+  searchByImageLabel = 'Search by Image',
+  searchByImageAria = 'litbuy spreadsheet · search by image — opens catalogue site in a new tab',
+  searchByImageTitle = 'litbuy spreadsheet · search by image — opens catalogue browse in a new tab',
+} = Astro.props;
+
+const kbHero = variant === 'litbuyHero';
+
+const mlRoot = mlBase.replace(/\/$/, '');
+const searchAction = `${mlRoot}/search`;
+const searchByImageHref = mlRoot;
+
+const camera = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>`;
+
+const leadSearchIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`;
+---
+
+<form
+  class:list={['ml-search-bar', kbHero && 'ml-search-bar--kb-hero']}
+  action=""
+  method="get"
+  role="search"
+  aria-label={ariaLabel}
+>
+  <div class="ml-search-bar__pill">
+    <div class="ml-search-bar__main">
+      {
+        kbHero ? (
+          <span class="ml-search-bar__lead-icon" set:html={leadSearchIcon} aria-hidden="true" />
+        ) : null
+      }
+      <input
+        type="search"
+        name="q"
+        class="ml-search-bar__input"
+        placeholder={placeholder}
+        autocomplete="off"
+        enterkeyhint="search"
+        maxlength="2048"
+        required
+      />
+      <span class="ml-search-bar__divider" aria-hidden="true"></span>
+      <a
+        href={searchByImageHref}
+        class="ml-search-bar__by-image"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={searchByImageAria}
+        title={searchByImageTitle}
+      >
+        <span class="ml-search-bar__by-image-icon" set:html={camera} />
+        <span class="ml-search-bar__by-image-text">{searchByImageLabel}</span>
+      </a>
+    </div>
+    <button type="button" class="ml-search-bar__submit" aria-label={searchSubmitLabel}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <span class="ml-search-bar__submit-text" aria-hidden="true">{searchSubmitLabel}</span>
+    </button>
+  </div>
+</form>
+
+<script is:inline define:vars={{ searchAction }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form.ml-search-bar').forEach((form) => {
+      if (form.dataset.mlSearchNavigate) return;
+      form.dataset.mlSearchNavigate = '1';
+
+      const input = form.querySelector('input[name="q"]');
+      const btn = form.querySelector('button.ml-search-bar__submit');
+      if (!(input instanceof HTMLInputElement) || !(btn instanceof HTMLButtonElement)) return;
+
+      function openCatalogue() {
+        if (form.dataset.mlSubmitOpening === '1') return;
+        const q = String(input.value).trim();
+        if (!q) {
+          input.focus();
+          return;
+        }
+        if (!input.checkValidity()) {
+          input.reportValidity();
+          return;
+        }
+        form.dataset.mlSubmitOpening = '1';
+        const url = `${searchAction}?q=${encodeURIComponent(q)}`;
+        const tab = window.open(url, '_blank', 'noopener,noreferrer');
+        if (tab) tab.opener = null;
+        window.setTimeout(() => {
+          delete form.dataset.mlSubmitOpening;
+        }, 800);
+      }
+
+      form.addEventListener(
+        'submit',
+        (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openCatalogue();
+        },
+        { capture: true },
+      );
+
+      btn.addEventListener('click', () => {
+        if (!input.checkValidity()) {
+          input.reportValidity();
+          return;
+        }
+        openCatalogue();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        if (!input.checkValidity()) {
+          input.reportValidity();
+          return;
+        }
+        openCatalogue();
+      });
+    });
+  });
+</script>
+
+<style>
+  .ml-search-bar {
+    width: 100%;
+    max-width: min(42rem, 100%);
+    margin: 0 0 1.35rem;
+  }
+
+  .ml-search-bar__pill {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(232, 232, 240, 0.98);
+    box-shadow:
+      0 14px 44px rgba(26, 26, 26, 0.07),
+      0 4px 12px rgba(26, 26, 26, 0.05);
+    min-height: 3rem;
+  }
+
+  .ml-search-bar__main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.35rem;
+    padding: 0.35rem 0.05rem 0.35rem 1.05rem;
+  }
+
+  .ml-search-bar__input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0.5rem 0.35rem 0.5rem 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    /* ≥16px prevents iOS Safari zoom-on-focus */
+    font-size: max(1rem, 16px);
+    color: var(--text);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .ml-search-bar__input::placeholder {
+    color: var(--muted);
+  }
+
+  .ml-search-bar__divider {
+    flex-shrink: 0;
+    width: 1px;
+    align-self: stretch;
+    min-height: 1.35rem;
+    margin: 0 0.15rem 0 0.25rem;
+    background: var(--border);
+    opacity: 0.85;
+  }
+
+  .ml-search-bar__by-image {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 0.1rem;
+    padding: 0.35rem 0.45rem 0.35rem 0.2rem;
+    border-radius: 0.55rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ml-search-bar__by-image:hover {
+    color: var(--oob-pink, #ff1e6f);
+    background: rgba(255, 30, 111, 0.07);
+  }
+
+  .ml-search-bar__by-image-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ml-search-bar__by-image-icon :global(svg) {
+    display: block;
+  }
+
+  .ml-search-bar__submit {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0 1.15rem;
+    border: none;
+    border-radius: 0;
+    background: var(--oob-pink, #ff1e6f);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition:
+      filter 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .ml-search-bar__submit:hover {
+    filter: brightness(1.06);
+  }
+
+  .ml-search-bar__submit :global(svg) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .ml-search-bar__submit-text {
+    display: inline;
+  }
+
+  @media (max-width: 520px) {
+    .ml-search-bar__main {
+      padding-left: 0.85rem;
+    }
+
+    .ml-search-bar__submit {
+      padding: 0 0.95rem;
+    }
+
+    .ml-search-bar__pill {
+      min-height: 2.875rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .ml-search-bar__by-image-text {
+      display: none;
+    }
+
+    .ml-search-bar__divider {
+      margin-right: 0.05rem;
+    }
+
+    .ml-search-bar__submit {
+      font-size: 0.8125rem;
+      padding: 0 0.82rem;
+    }
+  }
+
+  .ml-search-bar--kb-hero {
+    max-width: min(52rem, 100%);
+    margin-bottom: 2rem;
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__pill {
+    min-height: 3.65rem;
+    border-radius: 999px;
+    border-color: rgba(235, 235, 240, 1);
+    box-shadow:
+      0 18px 48px rgba(12, 12, 18, 0.28),
+      0 4px 14px rgba(12, 12, 18, 0.12);
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__main {
+    padding-left: 1rem;
+    gap: 0.5rem;
+  }
+
+  .ml-search-bar__lead-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(55, 55, 65, 0.55);
+  }
+
+  .ml-search-bar__lead-icon :global(svg) {
+    display: block;
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__input {
+    font-size: max(1.0625rem, 16px);
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__by-image:hover {
+    color: #e45800;
+    background: rgba(252, 101, 54, 0.09);
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__submit {
+    position: relative;
+    padding: 0 1.85rem;
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    background: #fc6536;
+    border-radius: 0 999px 999px 0;
+    margin: -1px -1px -1px 0;
+    min-width: 7.5rem;
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__submit:hover {
+    filter: brightness(1.05);
+    background: #fc6536;
+  }
+
+  .ml-search-bar--kb-hero .ml-search-bar__submit :global(svg) {
+    display: none;
+  }
+
+  /**
+   * Hero search: keep one row on phones — icon-only submit + tighter chrome (was flex-wrap → button below).
+   */
+  @media (max-width: 639px) {
+    .ml-search-bar--kb-hero .ml-search-bar__pill {
+      flex-wrap: nowrap;
+      border-radius: 999px;
+      min-height: 3.15rem;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__main {
+      padding-left: 0.55rem;
+      gap: 0.28rem;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__lead-icon {
+      display: none;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__input {
+      font-size: max(1rem, 16px);
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__by-image-text {
+      display: none;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__submit {
+      flex-shrink: 0;
+      min-width: auto;
+      padding: 0 0.95rem;
+      font-size: max(1rem, 16px);
+      letter-spacing: 0.02em;
+      border-radius: 0 999px 999px 0;
+      margin: -1px -1px -1px 0;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__submit :global(svg) {
+      display: block;
+    }
+
+    .ml-search-bar--kb-hero .ml-search-bar__submit-text {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  }
+</style>

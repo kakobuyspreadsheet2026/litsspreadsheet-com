@@ -1,0 +1,231 @@
+---
+import SiteHeader from '../SiteHeader.astro';
+import SiteFooter from '../SiteFooter.astro';
+import SpreadsheetGuideSections from '../SpreadsheetGuideSections.astro';
+import { litbuyCheckoutUrl } from '../../consts';
+import type { HowToBuyCopy } from '../../i18n/copy/howToBuy';
+import type { SpreadsheetPageCopy } from '../../i18n/copy/spreadsheetPage';
+
+interface Props {
+  locale: string;
+  copy: HowToBuyCopy;
+  spreadsheetCopy: SpreadsheetPageCopy;
+  homeHref: string;
+  newsHref: string;
+  sheetUrl: string;
+  /** Raw records from JSON (mirrored LitBuy help articles). */
+  excerpts: { title: string; sourceUrl: string; bodyHtml: string }[];
+}
+
+const LITBUY_HELP_HUB = litbuyCheckoutUrl;
+
+const { locale, copy, spreadsheetCopy, homeHref, newsHref, sheetUrl, excerpts } = Astro.props;
+---
+
+<SiteHeader locale={locale} />
+
+<main>
+  <section class="band-alt">
+    <div class="wrap">
+      <div class="page-mast">
+        <p class="htb-back">
+          <a href={homeHref}>{copy.backHomeLabel}</a>
+        </p>
+        <h1 class="simple-page-title">{copy.h1}</h1>
+        <p class="section-intro htb-intro" set:html={copy.introHtml} />
+
+        <article class="official-sample" aria-labelledby="how-to-buy-official-heading">
+          <div class="official-sample-head">
+            <span class="official-sample-badge" id="how-to-buy-official-heading">{copy.badge}</span>
+            <a class="official-sample-link" href={LITBUY_HELP_HUB} target="_blank" rel="noopener noreferrer">
+              {copy.officialFaqHrefLabel}
+            </a>
+          </div>
+          <p class="official-sample-meta" set:html={copy.officialMetaHtml} />
+
+          <div class="official-faq-stack" lang="en">
+            {
+              excerpts.map((excerpt) => (
+                <details class="official-faq-item">
+                  <summary class="official-faq-summary">{excerpt.title}</summary>
+                  <div class="official-faq-body">
+                    <p class="official-faq-source">
+                      <a href={excerpt.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {copy.sourcePageLabel}
+                      </a>
+                    </p>
+                    <div class="official-faq-html" set:html={excerpt.bodyHtml} />
+                  </div>
+                </details>
+              ))
+            }
+          </div>
+        </article>
+
+        <SpreadsheetGuideSections
+          locale={locale}
+          copy={spreadsheetCopy}
+          newsHref={newsHref}
+          sheetUrl={sheetUrl}
+        />
+      </div>
+    </div>
+  </section>
+</main>
+
+<SiteFooter locale={locale} />
+
+<style>
+  .htb-back {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+  }
+  .htb-intro {
+    margin-top: 0;
+  }
+  .official-sample {
+    margin: 2rem 0 0;
+    padding: 1.35rem 1.25rem 1.5rem;
+    max-width: 52rem;
+    min-width: 0;
+    background: linear-gradient(180deg, var(--hero-surface-2, #f9f9fc) 0%, var(--surface) 100%);
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    border-left: 4px solid var(--accent);
+    text-align: left;
+  }
+  .official-sample-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    margin-bottom: 0.65rem;
+  }
+  .official-sample-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    background: var(--accent-badge-bg);
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+  }
+  .official-sample-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .official-sample-meta {
+    margin: 0 0 1rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .official-faq-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .official-faq-item {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: #fff;
+    min-width: 0;
+    overflow-x: auto;
+  }
+  .official-faq-item[open] {
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+  }
+  .official-faq-summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.85rem 2.25rem 0.85rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.45;
+    position: relative;
+    user-select: none;
+  }
+  .official-faq-summary::-webkit-details-marker {
+    display: none;
+  }
+  .official-faq-summary::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: translateY(-65%) rotate(45deg);
+    transition: transform 0.18s ease;
+    opacity: 0.75;
+  }
+  .official-faq-item[open] .official-faq-summary::after {
+    transform: translateY(-25%) rotate(-135deg);
+  }
+  .official-faq-summary:hover {
+    background: rgba(13, 148, 136, 0.06);
+  }
+  .official-faq-body {
+    padding: 0 1rem 1rem;
+    border-top: 1px solid var(--border);
+    background: #fafafa;
+    min-width: 0;
+  }
+  .official-faq-source {
+    margin: 0.75rem 0 0.35rem;
+    font-size: 0.8125rem;
+  }
+  .official-faq-source a {
+    font-weight: 600;
+  }
+  .official-faq-html {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--muted);
+    min-width: 0;
+  }
+  .official-faq-html :where(p, ul, ol) {
+    margin: 0 0 0.55rem;
+  }
+  .official-faq-html :where(ul, ol) {
+    padding-left: 1.35rem;
+  }
+  .official-faq-html :where(li) {
+    margin-bottom: 0.35rem;
+  }
+  .official-faq-html :where(strong, b) {
+    color: var(--text);
+  }
+  .official-faq-html .help-table-class {
+    overflow-x: auto;
+    margin: 0.5rem 0 0.75rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .official-faq-html :where(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .official-faq-html :where(th, td) {
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.5rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .official-faq-html .ace-line {
+    margin: 0 0 0.45rem;
+  }
+  .official-faq-html img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+  }
+</style>
