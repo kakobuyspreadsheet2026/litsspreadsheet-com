@@ -4,6 +4,7 @@ import { articlesPart2 } from './part2';
 import { articlesPart3 } from './part3';
 import { articlesPart4 } from './part4';
 import { articlesPart5 } from './part5';
+import { articlesPart6 } from './part6';
 
 const ALL_ARTICLES: Record<string, BlogArticleContent> = {
   ...articlesPart1,
@@ -11,6 +12,7 @@ const ALL_ARTICLES: Record<string, BlogArticleContent> = {
   ...articlesPart3,
   ...articlesPart4,
   ...articlesPart5,
+  ...articlesPart6,
 };
 
 export function getBlogArticleContent(slug: string): BlogArticleContent | undefined {

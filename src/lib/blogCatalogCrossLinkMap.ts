@@ -15,6 +15,8 @@ const SPREADSHEET_GUIDE_SLUGS = new Set<string>([
   'spotting-red-flag-sellers-community-spreadsheets',
   'community-crowdsourced-qc-verification-batches',
   'litrepstar-catalog-litbuy-spreadsheet-bridge',
+  'litbuy-reading-listing-photos-trust-signals-2026',
+  'litbuy-declared-value-practice-before-eu-july-2026',
 ]);
 
 const HOW_TO_BUY_SLUGS = new Set<string>([
@@ -23,6 +25,8 @@ const HOW_TO_BUY_SLUGS = new Set<string>([
   'litbuy-1688-wholesale-context',
   'litbuy-spreadsheet-to-parcel-checklist',
   'litbuy-links-discovery-url-hygiene',
+  'litbuy-parcel-consolidation-split-decision-guide',
+  'litbuy-summer-warehouse-qc-checklist-2026',
 ]);
 
 export const BLOG_HUB_LINK_LABELS: Record<BlogHubLinkKind, string> = {
@@ -103,6 +107,16 @@ const BLOG_CATALOG_MAP: Record<string, readonly string[]> = {
   'timing-the-reps-hype-cycle-spreadsheets': ['shoes', 'hoodies', 't-shirts'],
   'evolution-of-reps-spreadsheets-excel-to-web': ['shoes', 't-shirts', 'hoodies'],
   'litbuy-discord-community-find-hygiene': ['shoes', 'jersey', 'hoodies'],
+  'eu-customs-reform-july-2026-litbuy-spreadsheet': ['shoes', 'bags', 'jackets'],
+  'litbuy-618-shopping-festival-2026-spreadsheet': ['shoes', 't-shirts', 'electronics'],
+  'litbuy-post-618-haul-review-playbook': ['shoes', 'hoodies', 't-shirts'],
+  'litbuy-summer-warehouse-qc-checklist-2026': ['t-shirts', 'pants', 'shoes'],
+  'litbuy-parcel-consolidation-split-decision-guide': ['jackets', 'bags', 'shoes'],
+  'litbuy-shorts-tops-summer-spreadsheet-lane-2026': ['t-shirts', 'pants', 'hoodies'],
+  'litbuy-domestic-shipping-618-backlog-basics': ['shoes', 't-shirts', 'hoodies'],
+  'litbuy-declared-value-practice-before-eu-july-2026': ['shoes', 'bags', 'jackets'],
+  'litbuy-reading-listing-photos-trust-signals-2026': ['shoes', 't-shirts', 'accessories'],
+  'litbuy-no-presale-618-order-timing-2026': ['shoes', 't-shirts', 'hoodies'],
 };
 
 export function getBlogCatalogCategories(canonicalPath: string): string[] {
