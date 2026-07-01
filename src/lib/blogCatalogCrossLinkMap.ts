@@ -17,6 +17,8 @@ const SPREADSHEET_GUIDE_SLUGS = new Set<string>([
   'litrepstar-catalog-litbuy-spreadsheet-bridge',
   'litbuy-reading-listing-photos-trust-signals-2026',
   'litbuy-declared-value-practice-before-eu-july-2026',
+  'litbuy-eu-july-1-countdown-checklist-2026',
+  'litbuy-eu-customs-reform-live-july-1-2026',
 ]);
 
 const HOW_TO_BUY_SLUGS = new Set<string>([
@@ -27,6 +29,7 @@ const HOW_TO_BUY_SLUGS = new Set<string>([
   'litbuy-links-discovery-url-hygiene',
   'litbuy-parcel-consolidation-split-decision-guide',
   'litbuy-summer-warehouse-qc-checklist-2026',
+  'litbuy-rehearsal-packaging-june-2026-update',
 ]);
 
 export const BLOG_HUB_LINK_LABELS: Record<BlogHubLinkKind, string> = {
@@ -117,6 +120,19 @@ const BLOG_CATALOG_MAP: Record<string, readonly string[]> = {
   'litbuy-declared-value-practice-before-eu-july-2026': ['shoes', 'bags', 'jackets'],
   'litbuy-reading-listing-photos-trust-signals-2026': ['shoes', 't-shirts', 'accessories'],
   'litbuy-no-presale-618-order-timing-2026': ['shoes', 't-shirts', 'hoodies'],
+  'litbuy-dragon-boat-festival-2026-agent-forwarding': ['shoes', 't-shirts', 'hoodies'],
+  'litbuy-post-618-warehouse-intake-june-2026': ['shoes', 'hoodies', 'jackets'],
+  'litbuy-618-tail-logistics-sf-june-2026': ['shoes', 't-shirts', 'accessories'],
+  'litbuy-eu-ship-before-july-1-cutoff-guide': ['shoes', 'bags', 'jackets'],
+  'litbuy-eu-ioss-vs-customs-duty-june-2026': ['shoes', 'perfume', 'electronics'],
+  'litbuy-eu-cn-code-duty-modeling-spreadsheet': ['shoes', 'bags', 'accessories'],
+  'litbuy-mid-year-spreadsheet-budget-reset-2026': ['shoes', 't-shirts', 'hoodies'],
+  'litbuy-sandals-slides-summer-lane-2026': ['shoes', 'accessories', 'pants'],
+  'litbuy-warehouse-hold-vs-ship-eu-june-2026': ['jackets', 'bags', 'shoes'],
+  'litbuy-rehearsal-packaging-june-2026-update': ['jackets', 'bags', 'shoes'],
+  'litbuy-eu-july-1-countdown-checklist-2026': ['shoes', 'bags', 'jackets'],
+  'litbuy-eu-reform-eve-june-30-2026': ['shoes', 'bags', 'jackets'],
+  'litbuy-eu-customs-reform-live-july-1-2026': ['shoes', 'bags', 'jackets'],
 };
 
 export function getBlogCatalogCategories(canonicalPath: string): string[] {
