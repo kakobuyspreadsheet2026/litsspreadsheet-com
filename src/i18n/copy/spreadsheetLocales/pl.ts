@@ -147,19 +147,19 @@ Nowy w wklejaniu linków? Zacznij od <a href="{howToUrl}">Jak kupować</a>.`,
   resourceCards: [
     {
       title: 'Wklejanie linków krok po kroku',
-      bodyHtml: `Nowy w workflow? Nasza strona <a href="/how-to-buy/">Jak kupować</a> prowadzi przez kopiowanie URL, składanie zamówień i QC magazynu.`,
+      bodyHtml: `Nowy w workflow? Nasza strona <a href="{howToUrl}">Jak kupować</a> prowadzi przez kopiowanie URL, składanie zamówień i QC magazynu.`,
     },
     {
       title: 'Aktualności i update LitBuy',
-      bodyHtml: `Zmiany polityki, wskazówki wysyłki i ogłoszenia huba są na <a href="/news/">Aktualności &amp; przewodniki</a>.`,
+      bodyHtml: `Zmiany polityki, wskazówki wysyłki i ogłoszenia huba są na <a href="{newsUrl}">Aktualności &amp; przewodniki</a>.`,
     },
     {
       title: 'O tym hubie arkusza',
-      bodyHtml: `Dowiedz się, jak litsspreadsheet.com łączy się z LitBuy i marketplace’ami trzecich stron na stronie <a href="/about/">O nas</a>.`,
+      bodyHtml: `Dowiedz się, jak litsspreadsheet.com łączy się z LitBuy i marketplace’ami trzecich stron na stronie <a href="{aboutUrl}">O nas</a>.`,
     },
     {
       title: 'Checklist QC przed eksportem',
-      bodyHtml: `Przed zatwierdzeniem paczki wróć do kroków QC w <a href="/how-to-buy/">Jak kupować</a>—powiększ zdjęcia i zgłaszaj wcześnie.`,
+      bodyHtml: `Przed zatwierdzeniem paczki wróć do kroków QC w <a href="{howToUrl}">Jak kupować</a>—powiększ zdjęcia i zgłaszaj wcześnie.`,
     },
   ],
   marketplaceBridgeTitle: 'Linki Taobao, Weidian i 1688',
@@ -167,15 +167,15 @@ Nowy w wklejaniu linków? Zacznij od <a href="{howToUrl}">Jak kupować</a>.`,
   marketplaceBridgeCards: [
     {
       title: 'Ogłoszenia Taobao',
-      bodyHtml: `Większość wierszy obuwia i odzieży używa Taobao. Sprawdź siatki wariantów i tabele rozmiarów przed wklejeniem—szczegóły w <a href="/how-to-buy/">Jak kupować</a>.`,
+      bodyHtml: `Większość wierszy obuwia i odzieży używa Taobao. Sprawdź siatki wariantów i tabele rozmiarów przed wklejeniem—szczegóły w <a href="{howToUrl}">Jak kupować</a>.`,
     },
     {
       title: 'Sklepy Weidian',
-      bodyHtml: `Sprzedawcy Weidian często aktualizują albumy. Kopiuj świeże linki produktów, nie stare miniatury. Zobacz <a href="/news/">Aktualności &amp; przewodniki</a> po wskazówki sourcingu.`,
+      bodyHtml: `Sprzedawcy Weidian często aktualizują albumy. Kopiuj świeże linki produktów, nie stare miniatury. Zobacz <a href="{newsUrl}">Aktualności &amp; przewodniki</a> po wskazówki sourcingu.`,
     },
     {
       title: 'Wiersze wholesale 1688',
-      bodyHtml: `Ogłoszenia hurtowe mogą mieć minimalne zamówienia. Potwierdź MOQ i ograniczenia korytarza przed zamówieniem przez <a href="/how-to-buy/">Jak kupować</a>.`,
+      bodyHtml: `Ogłoszenia hurtowe mogą mieć minimalne zamówienia. Potwierdź MOQ i ograniczenia korytarza przed zamówieniem przez <a href="{howToUrl}">Jak kupować</a>.`,
     },
   ],
   faqTitle: 'FAQ',

@@ -147,19 +147,19 @@ Nouveau au collage de liens ? Commencez par <a href="{howToUrl}">Comment acheter
   resourceCards: [
     {
       title: 'Coller les liens pas à pas',
-      bodyHtml: `Nouveau au workflow ? Notre page <a href="/how-to-buy/">Comment acheter</a> détaille copier URLs, soumettre commandes et revoir le QC entrepôt.`,
+      bodyHtml: `Nouveau au workflow ? Notre page <a href="{howToUrl}">Comment acheter</a> détaille copier URLs, soumettre commandes et revoir le QC entrepôt.`,
     },
     {
       title: 'Actualités et mises à jour LitBuy',
-      bodyHtml: `Changements de politique, conseils d’expédition et annonces du hub sont sur <a href="/news/">Actualités &amp; guides</a>.`,
+      bodyHtml: `Changements de politique, conseils d’expédition et annonces du hub sont sur <a href="{newsUrl}">Actualités &amp; guides</a>.`,
     },
     {
       title: 'À propos de ce hub feuille',
-      bodyHtml: `Découvrez comment litsspreadsheet.com se rapporte à LitBuy et aux marketplaces tiers sur notre page <a href="/about/">À propos</a>.`,
+      bodyHtml: `Découvrez comment litsspreadsheet.com se rapporte à LitBuy et aux marketplaces tiers sur notre page <a href="{aboutUrl}">À propos</a>.`,
     },
     {
       title: 'Checklist QC avant export',
-      bodyHtml: `Avant d’approuver un colis, repassez les étapes QC dans <a href="/how-to-buy/">Comment acheter</a>—zoomez les photos et contestez tôt.`,
+      bodyHtml: `Avant d’approuver un colis, repassez les étapes QC dans <a href="{howToUrl}">Comment acheter</a>—zoomez les photos et contestez tôt.`,
     },
   ],
   marketplaceBridgeTitle: 'Liens Taobao, Weidian et 1688',
@@ -167,15 +167,15 @@ Nouveau au collage de liens ? Commencez par <a href="{howToUrl}">Comment acheter
   marketplaceBridgeCards: [
     {
       title: 'Annonces Taobao',
-      bodyHtml: `La plupart des lignes chaussures et vêtements utilisent Taobao. Vérifiez grilles de variantes et guides des tailles avant collage—détails dans <a href="/how-to-buy/">Comment acheter</a>.`,
+      bodyHtml: `La plupart des lignes chaussures et vêtements utilisent Taobao. Vérifiez grilles de variantes et guides des tailles avant collage—détails dans <a href="{howToUrl}">Comment acheter</a>.`,
     },
     {
       title: 'Boutiques Weidian',
-      bodyHtml: `Les vendeurs Weidian mettent à jour les albums fréquemment. Copiez des liens article frais, pas de miniatures obsolètes. Consultez <a href="/news/">Actualités &amp; guides</a> pour des conseils sourcing.`,
+      bodyHtml: `Les vendeurs Weidian mettent à jour les albums fréquemment. Copiez des liens article frais, pas de miniatures obsolètes. Consultez <a href="{newsUrl}">Actualités &amp; guides</a> pour des conseils sourcing.`,
     },
     {
       title: 'Lignes wholesale 1688',
-      bodyHtml: `Les annonces en gros peuvent avoir des règles de commande minimum. Confirmez MOQ et restrictions d’allée avant commande via <a href="/how-to-buy/">Comment acheter</a>.`,
+      bodyHtml: `Les annonces en gros peuvent avoir des règles de commande minimum. Confirmez MOQ et restrictions d’allée avant commande via <a href="{howToUrl}">Comment acheter</a>.`,
     },
   ],
   faqTitle: 'FAQ',

@@ -147,19 +147,19 @@ Nuovo all’incollare link? Inizia con <a href="{howToUrl}">Come acquistare</a>.
   resourceCards: [
     {
       title: 'Incollare link passo passo',
-      bodyHtml: `Nuovo al workflow? La nostra pagina <a href="/how-to-buy/">Come acquistare</a> spiega copiare URL, inviare ordini e rivedere il QC magazzino.`,
+      bodyHtml: `Nuovo al workflow? La nostra pagina <a href="{howToUrl}">Come acquistare</a> spiega copiare URL, inviare ordini e rivedere il QC magazzino.`,
     },
     {
       title: 'Notizie e aggiornamenti LitBuy',
-      bodyHtml: `Cambiamenti di policy, consigli spedizione e annunci hub sono su <a href="/news/">Notizie &amp; guide</a>.`,
+      bodyHtml: `Cambiamenti di policy, consigli spedizione e annunci hub sono su <a href="{newsUrl}">Notizie &amp; guide</a>.`,
     },
     {
       title: 'Info su questo hub foglio',
-      bodyHtml: `Scopri come litsspreadsheet.com si collega a LitBuy e ai marketplace terzi nella pagina <a href="/about/">Chi siamo</a>.`,
+      bodyHtml: `Scopri come litsspreadsheet.com si collega a LitBuy e ai marketplace terzi nella pagina <a href="{aboutUrl}">Chi siamo</a>.`,
     },
     {
       title: 'Checklist QC prima dell’export',
-      bodyHtml: `Prima di approvare un pacco, rivedi i passaggi QC in <a href="/how-to-buy/">Come acquistare</a>—ingrandisci le foto e contesta presto.`,
+      bodyHtml: `Prima di approvare un pacco, rivedi i passaggi QC in <a href="{howToUrl}">Come acquistare</a>—ingrandisci le foto e contesta presto.`,
     },
   ],
   marketplaceBridgeTitle: 'Link Taobao, Weidian e 1688',
@@ -167,15 +167,15 @@ Nuovo all’incollare link? Inizia con <a href="{howToUrl}">Come acquistare</a>.
   marketplaceBridgeCards: [
     {
       title: 'Annunci Taobao',
-      bodyHtml: `La maggior parte delle righe calzature e abbigliamento usa Taobao. Controlla griglie varianti e taglie prima di incollare—dettagli in <a href="/how-to-buy/">Come acquistare</a>.`,
+      bodyHtml: `La maggior parte delle righe calzature e abbigliamento usa Taobao. Controlla griglie varianti e taglie prima di incollare—dettagli in <a href="{howToUrl}">Come acquistare</a>.`,
     },
     {
       title: 'Negozi Weidian',
-      bodyHtml: `I venditori Weidian aggiornano album frequentemente. Copia link articolo freschi, non miniature obsolete. Vedi <a href="/news/">Notizie &amp; guide</a> per consigli sourcing.`,
+      bodyHtml: `I venditori Weidian aggiornano album frequentemente. Copia link articolo freschi, non miniature obsolete. Vedi <a href="{newsUrl}">Notizie &amp; guide</a> per consigli sourcing.`,
     },
     {
       title: 'Righe wholesale 1688',
-      bodyHtml: `Gli annunci bulk possono avere regole ordine minimo. Conferma MOQ e restrizioni corsia prima di ordinare via <a href="/how-to-buy/">Come acquistare</a>.`,
+      bodyHtml: `Gli annunci bulk possono avere regole ordine minimo. Conferma MOQ e restrizioni corsia prima di ordinare via <a href="{howToUrl}">Come acquistare</a>.`,
     },
   ],
   faqTitle: 'FAQ',

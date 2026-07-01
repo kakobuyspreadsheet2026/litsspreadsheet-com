@@ -147,19 +147,19 @@ New to pasting links? Start with <a href="{howToUrl}">How to buy</a>.`,
   resourceCards: [
     {
       title: 'Paste links step by step',
-      bodyHtml: `New to the workflow? Our <a href="/how-to-buy/">How to buy</a> page walks through copying URLs, submitting orders, and reviewing warehouse QC.`,
+      bodyHtml: `New to the workflow? Our <a href="{howToUrl}">How to buy</a> page walks through copying URLs, submitting orders, and reviewing warehouse QC.`,
     },
     {
       title: 'News and LitBuy updates',
-      bodyHtml: `Policy changes, shipping tips, and hub announcements live on <a href="/news/">News &amp; guides</a>.`,
+      bodyHtml: `Policy changes, shipping tips, and hub announcements live on <a href="{newsUrl}">News &amp; guides</a>.`,
     },
     {
       title: 'About this spreadsheet hub',
-      bodyHtml: `Learn how litsspreadsheet.com relates to LitBuy and third-party marketplaces on our <a href="/about/">About</a> page.`,
+      bodyHtml: `Learn how litsspreadsheet.com relates to LitBuy and third-party marketplaces on our <a href="{aboutUrl}">About</a> page.`,
     },
     {
       title: 'QC checklist before export',
-      bodyHtml: `Before approving a parcel, revisit the QC steps in <a href="/how-to-buy/">How to buy</a>—magnify photos and dispute early.`,
+      bodyHtml: `Before approving a parcel, revisit the QC steps in <a href="{howToUrl}">How to buy</a>—magnify photos and dispute early.`,
     },
   ],
   marketplaceBridgeTitle: 'Taobao, Weidian, and 1688 links',
@@ -167,15 +167,15 @@ New to pasting links? Start with <a href="{howToUrl}">How to buy</a>.`,
   marketplaceBridgeCards: [
     {
       title: 'Taobao listings',
-      bodyHtml: `Most footwear and apparel rows use Taobao. Check variant grids and size charts before pasting—details in <a href="/how-to-buy/">How to buy</a>.`,
+      bodyHtml: `Most footwear and apparel rows use Taobao. Check variant grids and size charts before pasting—details in <a href="{howToUrl}">How to buy</a>.`,
     },
     {
       title: 'Weidian shops',
-      bodyHtml: `Weidian sellers update albums frequently. Copy fresh item links, not stale thumbnails. See <a href="/news/">News &amp; guides</a> for sourcing tips.`,
+      bodyHtml: `Weidian sellers update albums frequently. Copy fresh item links, not stale thumbnails. See <a href="{newsUrl}">News &amp; guides</a> for sourcing tips.`,
     },
     {
       title: '1688 wholesale rows',
-      bodyHtml: `Bulk listings may carry minimum-order rules. Confirm MOQ and lane restrictions before ordering via <a href="/how-to-buy/">How to buy</a>.`,
+      bodyHtml: `Bulk listings may carry minimum-order rules. Confirm MOQ and lane restrictions before ordering via <a href="{howToUrl}">How to buy</a>.`,
     },
   ],
   faqTitle: 'FAQ',
@@ -190,15 +190,15 @@ New to pasting links? Start with <a href="{howToUrl}">How to buy</a>.`,
     },
     {
       q: 'Can beginners use the spreadsheet?',
-      aHtml: `Yes. Read this page, then follow <a href="{howToUrl}">How to buy</a> for the full paste-and-QC workflow.`,
+      aHtml: `Yes. Read this page, then follow <a href="{howToUrl}">How to buy</a> for the full paste-and-QC workflow—or start with the <a href="/blog/litbuy-taobao-paste-workflow-2026/">Taobao paste workflow</a> blog note.`,
     },
     {
       q: 'Does seller QC replace warehouse photos?',
-      aHtml: `No. Seller previews are hints only. Always approve based on LitBuy warehouse photography.`,
+      aHtml: `No. Seller previews are hints only. Always approve based on LitBuy warehouse photography. See our <a href="/blog/litbuy-spreadsheet-qc/">warehouse QC workflow</a> and <a href="/blog/litbuy-4k-qc-video-inspection-guide/">4K QC inspection guide</a>.`,
     },
     {
       q: 'Why do links sometimes break?',
-      aHtml: `Sellers rename or remove listings often. Pick another row in the same category or refresh via <a href="{ml}" target="_blank" rel="noopener noreferrer">live browse</a>.`,
+      aHtml: `Sellers rename or remove listings often. Pick another row in the same category or refresh via <a href="{ml}" target="_blank" rel="noopener noreferrer">live browse</a>. Archive dead rows using our <a href="/blog/spreadsheet-row-archiving-vanished-listings/">vanished listing guide</a>.`,
     },
     {
       q: 'What categories are available?',
@@ -210,11 +210,11 @@ New to pasting links? Start with <a href="{howToUrl}">How to buy</a>.`,
     },
     {
       q: 'How often is the spreadsheet updated?',
-      aHtml: `Listings rotate with seller stock. Check <a href="{newsUrl}">News &amp; guides</a> for hub updates and browse the catalogue for current rows.`,
+      aHtml: `Listings rotate with seller stock. Check <a href="{newsUrl}">News &amp; guides</a> for hub updates, browse the catalogue for current rows, and read the <a href="/blog/litbuy-spreadsheet-browse-navigation-guide/">spreadsheet browse guide</a> on our blog.`,
     },
     {
       q: 'Do spreadsheet prices include shipping?',
-      aHtml: `No. Row prices are item estimates. Landed cost—including international freight—is calculated inside LitBuy.`,
+      aHtml: `No. Row prices are item estimates. Landed cost—including international freight—is calculated inside LitBuy. Model chargeable weight with our <a href="/blog/spreadsheet-volumetric-chargeable-weight-basics/">volumetric weight guide</a> and EU duty notes in the <a href="/blog/topics/eu-customs/">EU customs topic hub</a>.`,
     },
   ],
   bottomCtaTitle: 'Open the LitBuy Spreadsheet catalogue',

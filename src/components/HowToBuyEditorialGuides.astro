@@ -1,0 +1,97 @@
+---
+import blogPosts from '../data/blogPosts.json';
+import { BLOG_EDITORIAL_PILLARS } from '../lib/blogTopicClusters';
+import BlogTopicNav from './BlogTopicNav.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Editorial guides (English blog)' } = Astro.props;
+
+const postBySlug = new Map(
+  (blogPosts as { slug: string; title: string; description: string }[]).map((p) => [
+    p.slug,
+    p,
+  ]),
+);
+---
+
+<section class="htb-editorial" aria-labelledby="htb-editorial-heading">
+  <h2 id="htb-editorial-heading" class="htb-editorial__title">{title}</h2>
+  <p class="htb-editorial__lead">
+    Step-by-step LitBuy help lives above. These on-domain blog notes go deeper on QC, customs,
+    freight, and spreadsheet lanes.
+  </p>
+  <ul class="htb-editorial__list">
+    {
+      BLOG_EDITORIAL_PILLARS.slice(0, 6).map((item) => {
+        const post = postBySlug.get(item.slug);
+        if (!post) return null;
+        return (
+          <li class="htb-editorial__item">
+            <a href={`/blog/${item.slug}/`}>{post.title}</a>
+            <p>{item.blurb}</p>
+          </li>
+        );
+      })
+    }
+  </ul>
+  <BlogTopicNav title="Blog topic hubs" />
+</section>
+
+<style>
+  .htb-editorial {
+    margin: 2rem 0 0;
+    padding: 1.25rem 1.2rem 1.1rem;
+    max-width: 52rem;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    background: var(--surface, #fff);
+    text-align: left;
+  }
+
+  .htb-editorial__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .htb-editorial__lead {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .htb-editorial__list {
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .htb-editorial__item a {
+    font-weight: 700;
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+
+  .htb-editorial__item a:hover {
+    text-decoration: underline;
+  }
+
+  .htb-editorial__item p {
+    margin: 0.2rem 0 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .htb-editorial :global(.blog-topic-nav) {
+    margin-bottom: 0;
+    max-width: none;
+  }
+</style>

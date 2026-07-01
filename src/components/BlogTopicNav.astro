@@ -1,0 +1,68 @@
+---
+import { BLOG_TOPIC_CLUSTERS, getBlogTopicHubPath } from '../lib/blogTopicClusters';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Browse by topic' } = Astro.props;
+---
+
+<nav class="blog-topic-nav" aria-labelledby="blog-topic-nav-heading">
+  <h2 id="blog-topic-nav-heading" class="blog-topic-nav__title">{title}</h2>
+  <ul class="blog-topic-nav__list">
+    {
+      BLOG_TOPIC_CLUSTERS.map((topic) => (
+        <li>
+          <a class="blog-topic-nav__link" href={getBlogTopicHubPath(topic.id)}>
+            {topic.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .blog-topic-nav {
+    margin: 0 0 1.5rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    background: var(--surface, #fff);
+    max-width: 42rem;
+  }
+
+  .blog-topic-nav__title {
+    margin: 0 0 0.65rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .blog-topic-nav__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .blog-topic-nav__link {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.32rem 0.62rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--accent-soft, rgba(255, 30, 111, 0.08)) 60%, transparent);
+    color: var(--accent-dark, #0f766e);
+    text-decoration: none;
+  }
+
+  .blog-topic-nav__link:hover {
+    border-color: var(--accent-dark, #0f766e);
+    text-decoration: underline;
+  }
+</style>

@@ -16,13 +16,14 @@ export type {
   SpreadsheetResourceCard,
 } from './spreadsheetCopy.types';
 
-type HydrateCtx = { ml: string; howTo: string; news: string };
+type HydrateCtx = { ml: string; howTo: string; news: string; about: string };
 
 function hydrateStr(s: string, ctx: HydrateCtx): string {
   return s
     .replaceAll('{ml}', ctx.ml)
     .replaceAll('{howToUrl}', ctx.howTo)
     .replaceAll('{newsUrl}', ctx.news)
+    .replaceAll('{aboutUrl}', ctx.about)
     .replaceAll('{litbuyUrl}', 'https://www.litbuy.com/');
 }
 
@@ -31,8 +32,9 @@ export function hydrateSpreadsheetCopy(
   mlHref: string,
   howToHref: string,
   newsHref: string,
+  aboutHref: string,
 ): SpreadsheetPageCopy {
-  const ctx: HydrateCtx = { ml: mlHref, howTo: howToHref, news: newsHref };
+  const ctx: HydrateCtx = { ml: mlHref, howTo: howToHref, news: newsHref, about: aboutHref };
   return {
     ...raw,
     introHtml: hydrateStr(raw.introHtml, ctx),

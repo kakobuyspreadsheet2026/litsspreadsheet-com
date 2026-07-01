@@ -1,5 +1,6 @@
 ---
 import SpreadsheetCategoryBrowse from './SpreadsheetCategoryBrowse.astro';
+import SpreadsheetRecommendedReading from './SpreadsheetRecommendedReading.astro';
 import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
 import type { SpreadsheetPageCopy } from '../i18n/copy/spreadsheetPage';
 import {
@@ -229,6 +230,8 @@ const browseBySlug = Object.fromEntries(
       </div>
     </div>
   </section>
+
+  <SpreadsheetRecommendedReading />
 
   <section class="ssp-section" id="ssp-faq" aria-labelledby="ssp-faq-heading">
     <div class="wrap">

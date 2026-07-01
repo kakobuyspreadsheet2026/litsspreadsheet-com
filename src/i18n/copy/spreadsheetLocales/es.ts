@@ -147,19 +147,19 @@ Los anuncios cambian a menudo. Si un enlace falla, consulta el <strong><a href="
   resourceCards: [
     {
       title: 'Pegar enlaces paso a paso',
-      bodyHtml: `¿Nuevo en el flujo? Nuestra página <a href="/how-to-buy/">Cómo comprar</a> explica copiar URLs, enviar pedidos y revisar QC del almacén.`,
+      bodyHtml: `¿Nuevo en el flujo? Nuestra página <a href="{howToUrl}">Cómo comprar</a> explica copiar URLs, enviar pedidos y revisar QC del almacén.`,
     },
     {
       title: 'Noticias y actualizaciones LitBuy',
-      bodyHtml: `Cambios de política, consejos de envío y anuncios del hub están en <a href="/news/">Noticias &amp; guías</a>.`,
+      bodyHtml: `Cambios de política, consejos de envío y anuncios del hub están en <a href="{newsUrl}">Noticias &amp; guías</a>.`,
     },
     {
       title: 'Sobre este hub de hoja',
-      bodyHtml: `Aprende cómo litsspreadsheet.com se relaciona con LitBuy y marketplaces de terceros en nuestra página <a href="/about/">Acerca de</a>.`,
+      bodyHtml: `Aprende cómo litsspreadsheet.com se relaciona con LitBuy y marketplaces de terceros en nuestra página <a href="{aboutUrl}">Acerca de</a>.`,
     },
     {
       title: 'Checklist QC antes de exportar',
-      bodyHtml: `Antes de aprobar un paquete, repasa los pasos QC en <a href="/how-to-buy/">Cómo comprar</a>—amplía fotos y disputa pronto.`,
+      bodyHtml: `Antes de aprobar un paquete, repasa los pasos QC en <a href="{howToUrl}">Cómo comprar</a>—amplía fotos y disputa pronto.`,
     },
   ],
   marketplaceBridgeTitle: 'Enlaces Taobao, Weidian y 1688',
@@ -167,15 +167,15 @@ Los anuncios cambian a menudo. Si un enlace falla, consulta el <strong><a href="
   marketplaceBridgeCards: [
     {
       title: 'Anuncios Taobao',
-      bodyHtml: `La mayoría de filas de calzado y ropa usan Taobao. Revisa cuadrículas de variantes y tablas de tallas antes de pegar—detalles en <a href="/how-to-buy/">Cómo comprar</a>.`,
+      bodyHtml: `La mayoría de filas de calzado y ropa usan Taobao. Revisa cuadrículas de variantes y tablas de tallas antes de pegar—detalles en <a href="{howToUrl}">Cómo comprar</a>.`,
     },
     {
       title: 'Tiendas Weidian',
-      bodyHtml: `Los vendedores Weidian actualizan álbumes con frecuencia. Copia enlaces frescos de artículos, no miniaturas antiguas. Consulta <a href="/news/">Noticias &amp; guías</a> para consejos de sourcing.`,
+      bodyHtml: `Los vendedores Weidian actualizan álbumes con frecuencia. Copia enlaces frescos de artículos, no miniaturas antiguas. Consulta <a href="{newsUrl}">Noticias &amp; guías</a> para consejos de sourcing.`,
     },
     {
       title: 'Filas wholesale 1688',
-      bodyHtml: `Los anuncios al por mayor pueden tener reglas de pedido mínimo. Confirma MOQ y restricciones de carril antes de pedir vía <a href="/how-to-buy/">Cómo comprar</a>.`,
+      bodyHtml: `Los anuncios al por mayor pueden tener reglas de pedido mínimo. Confirma MOQ y restricciones de carril antes de pedir vía <a href="{howToUrl}">Cómo comprar</a>.`,
     },
   ],
   faqTitle: 'FAQ',

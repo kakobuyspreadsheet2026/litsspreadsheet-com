@@ -1,0 +1,75 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import BlogPageBody from '../../../components/pages/BlogPageBody.astro';
+import { BLOG_TOPIC_CLUSTERS, getBlogTopicById, getPostsForTopic } from '../../../lib/blogTopicClusters';
+import { getBlogCopy } from '../../../i18n/copy/blogPage';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { breadcrumbListLd } from '../../../lib/breadcrumbSchema';
+import { absoluteCanonicalUrl } from '../../../lib/canonicalPath';
+import { siteOrigin, siteStructuredDataIds } from '../../../consts';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return BLOG_TOPIC_CLUSTERS.map((topic) => ({
+    params: { topic: topic.id },
+    props: { topic },
+  }));
+}
+
+const { topic } = Astro.props;
+const posts = getPostsForTopic(topic.id);
+const locale = 'en';
+const copy = getBlogCopy(locale);
+const homeHref = getRelativeLocaleUrl(locale, '');
+const blogHref = getRelativeLocaleUrl(locale, 'blog');
+const canonicalPath = `/blog/topics/${topic.id}/`;
+const layoutTitle = `${topic.title} | ${copy.title}`;
+const description = topic.description;
+
+const origin = Astro.site?.origin ?? siteOrigin;
+const { websiteId } = siteStructuredDataIds(origin);
+const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${pageUrl}#webpage`,
+  name: topic.title,
+  url: pageUrl,
+  description,
+  isPartOf: { '@id': websiteId },
+};
+
+const breadcrumbLd = breadcrumbListLd([
+  { name: copy.breadcrumbHomeLabel, url: new URL(homeHref, Astro.site).href },
+  { name: copy.h1, url: new URL(blogHref, Astro.site).href },
+  { name: topic.title, url: pageUrl },
+]);
+---
+
+<Layout
+  title={layoutTitle}
+  description={description}
+  canonicalPath={canonicalPath}
+  locale={locale}
+  hreflangLocales={['en']}
+  hreflangMirrorsCanonical
+  jsonLd={[webPageLd, breadcrumbLd]}
+>
+  <BlogPageBody
+    locale={locale}
+    copy={{
+      ...copy,
+      h1: topic.title,
+      introHtml: `<p class="section-intro">${topic.description}</p>`,
+    }}
+    homeHref={homeHref}
+    posts={posts}
+    breadcrumbUi={[
+      { label: copy.breadcrumbHomeLabel, href: homeHref },
+      { label: copy.h1, href: blogHref },
+      { label: topic.title },
+    ]}
+  />
+</Layout>

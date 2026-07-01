@@ -16,6 +16,7 @@ export function buildHowToBuyPageProps(locale: RouteLocale, site: Site | undefin
   const homeHref = getRelativeLocaleUrl(locale, '');
   const howToHref = getRelativeLocaleUrl(locale, 'how-to-buy');
   const newsHref = getRelativeLocaleUrl(locale, 'news');
+  const aboutHref = getRelativeLocaleUrl(locale, 'about');
 
   const copy = hydrateHowToBuyCopy(getHowToBuyCopy(locale), ml, howToBuyDesktopNewsExcerpts.length);
   const spreadsheetCopy = hydrateSpreadsheetCopy(
@@ -23,6 +24,7 @@ export function buildHowToBuyPageProps(locale: RouteLocale, site: Site | undefin
     ml,
     howToHref,
     newsHref,
+    aboutHref,
   );
 
   const origin = site?.origin ?? siteOrigin;

@@ -147,19 +147,19 @@ Novo em colar links? Comece com <a href="{howToUrl}">Como comprar</a>.`,
   resourceCards: [
     {
       title: 'Colar links passo a passo',
-      bodyHtml: `Novo no fluxo? Nossa página <a href="/how-to-buy/">Como comprar</a> explica copiar URLs, enviar pedidos e revisar QC do armazém.`,
+      bodyHtml: `Novo no fluxo? Nossa página <a href="{howToUrl}">Como comprar</a> explica copiar URLs, enviar pedidos e revisar QC do armazém.`,
     },
     {
       title: 'Notícias e atualizações LitBuy',
-      bodyHtml: `Mudanças de política, dicas de envio e anúncios do hub estão em <a href="/news/">Notícias &amp; guias</a>.`,
+      bodyHtml: `Mudanças de política, dicas de envio e anúncios do hub estão em <a href="{newsUrl}">Notícias &amp; guias</a>.`,
     },
     {
       title: 'Sobre este hub de planilha',
-      bodyHtml: `Saiba como litsspreadsheet.com se relaciona com LitBuy e marketplaces terceiros na página <a href="/about/">Sobre</a>.`,
+      bodyHtml: `Saiba como litsspreadsheet.com se relaciona com LitBuy e marketplaces terceiros na página <a href="{aboutUrl}">Sobre</a>.`,
     },
     {
       title: 'Checklist QC antes da exportação',
-      bodyHtml: `Antes de aprovar um pacote, revise os passos QC em <a href="/how-to-buy/">Como comprar</a>—amplie fotos e dispute cedo.`,
+      bodyHtml: `Antes de aprovar um pacote, revise os passos QC em <a href="{howToUrl}">Como comprar</a>—amplie fotos e dispute cedo.`,
     },
   ],
   marketplaceBridgeTitle: 'Links Taobao, Weidian e 1688',
@@ -167,15 +167,15 @@ Novo em colar links? Comece com <a href="{howToUrl}">Como comprar</a>.`,
   marketplaceBridgeCards: [
     {
       title: 'Anúncios Taobao',
-      bodyHtml: `A maioria das linhas de calçados e roupas usa Taobao. Confira grades de variantes e tabelas de tamanho antes de colar—detalhes em <a href="/how-to-buy/">Como comprar</a>.`,
+      bodyHtml: `A maioria das linhas de calçados e roupas usa Taobao. Confira grades de variantes e tabelas de tamanho antes de colar—detalhes em <a href="{howToUrl}">Como comprar</a>.`,
     },
     {
       title: 'Lojas Weidian',
-      bodyHtml: `Vendedores Weidian atualizam álbuns com frequência. Copie links frescos de itens, não miniaturas antigas. Veja <a href="/news/">Notícias &amp; guias</a> para dicas de sourcing.`,
+      bodyHtml: `Vendedores Weidian atualizam álbuns com frequência. Copie links frescos de itens, não miniaturas antigas. Veja <a href="{newsUrl}">Notícias &amp; guias</a> para dicas de sourcing.`,
     },
     {
       title: 'Linhas wholesale 1688',
-      bodyHtml: `Anúncios em bulk podem ter regras de pedido mínimo. Confirme MOQ e restrições de faixa antes de pedir via <a href="/how-to-buy/">Como comprar</a>.`,
+      bodyHtml: `Anúncios em bulk podem ter regras de pedido mínimo. Confirme MOQ e restrições de faixa antes de pedir via <a href="{howToUrl}">Como comprar</a>.`,
     },
   ],
   faqTitle: 'FAQ',

@@ -1,6 +1,8 @@
 ---
 import SiteHeader from '../SiteHeader.astro';
 import SiteFooter from '../SiteFooter.astro';
+import BlogTopicNav from '../BlogTopicNav.astro';
+import { blogThumbAlt, getBlogOgImagePath } from '../../lib/blogImages';
 import type { BlogPageCopy } from '../../i18n/copy/blogPage';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
@@ -88,6 +90,8 @@ const showEnglishBanner = locale !== 'en' && copy.blogEnglishBannerLead.length >
         <h1 class="simple-page-title">{copy.h1}</h1>
         <div class="blog-intro" set:html={copy.introHtml} />
 
+        <BlogTopicNav />
+
         {
           showEnglishBanner ? (
             <p class="blog-lang-banner">
@@ -102,16 +106,27 @@ const showEnglishBanner = locale !== 'en' && copy.blogEnglishBannerLead.length >
             <ul class="blog-post-list">
               {posts.map((p) => (
                 <li class="blog-post-card">
-                  <time class="blog-post-date" datetime={p.published}>
-                    {p.published}
-                  </time>
-                  <h2 class="blog-post-title">
-                    <a href={`/blog/${p.slug}/`}>{p.title}</a>
-                  </h2>
-                  <p class="blog-post-desc">{p.description}</p>
-                  {p.lang === 'en' && locale !== 'en' && copy.postCardEnglishNote ? (
-                    <p class="blog-post-lang-note">{copy.postCardEnglishNote}</p>
-                  ) : null}
+                  <a class="blog-post-card__link" href={`/blog/${p.slug}/`}>
+                    <img
+                      class="blog-post-card__thumb"
+                      src={getBlogOgImagePath(p.slug)}
+                      alt={blogThumbAlt(p.title)}
+                      width="160"
+                      height="84"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="blog-post-card__body">
+                      <time class="blog-post-date" datetime={p.published}>
+                        {p.published}
+                      </time>
+                      <h2 class="blog-post-title">{p.title}</h2>
+                      <p class="blog-post-desc">{p.description}</p>
+                      {p.lang === 'en' && locale !== 'en' && copy.postCardEnglishNote ? (
+                        <p class="blog-post-lang-note">{copy.postCardEnglishNote}</p>
+                      ) : null}
+                    </div>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -227,10 +242,37 @@ const showEnglishBanner = locale !== 'en' && copy.blogEnglishBannerLead.length >
   }
   .blog-post-card {
     margin: 0;
-    padding: 1rem 1.1rem;
+    padding: 0;
     border: 1px solid var(--border);
     border-radius: 0.5rem;
     background: var(--surface, #fff);
+    overflow: hidden;
+  }
+
+  .blog-post-card__link {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-post-card__link:hover .blog-post-title {
+    color: var(--accent-dark, #0f766e);
+    text-decoration: underline;
+  }
+
+  .blog-post-card__thumb {
+    flex-shrink: 0;
+    width: 120px;
+    height: 63px;
+    object-fit: cover;
+    border-radius: 0.4rem;
+    border: 1px solid var(--border);
+  }
+
+  .blog-post-card__body {
+    min-width: 0;
   }
   .blog-post-date {
     display: block;

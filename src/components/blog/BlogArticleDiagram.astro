@@ -1,0 +1,158 @@
+---
+import { getBlogDiagramAlt } from '../../lib/blogImages';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const diagramAlt = getBlogDiagramAlt(slug);
+
+if (!diagramAlt) return null;
+
+const captionId = `diagram-${slug.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}`;
+---
+
+{
+  slug === 'eu-customs-reform-july-2026-litbuy-spreadsheet' && (
+    <figure class="blog-diagram" aria-labelledby={captionId}>
+      <figcaption id={captionId} class="blog-diagram__caption">
+        {diagramAlt}
+      </figcaption>
+      <svg class="blog-diagram__svg" viewBox="0 0 800 220" role="img" aria-hidden="true">
+        <rect width="800" height="220" rx="12" fill="#f8fafc" stroke="#e2e8f0" />
+        <line x1="80" y1="110" x2="720" y2="110" stroke="#0f766e" stroke-width="4" />
+        <circle cx="120" cy="110" r="10" fill="#0f766e" />
+        <text x="120" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">30 Jun 2026</text>
+        <text x="120" y="148" text-anchor="middle" font-size="12" fill="#475569">€150 duty relief ends</text>
+        <circle cx="320" cy="110" r="10" fill="#ff1e6f" />
+        <text x="320" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">1 Jul 2026</text>
+        <text x="320" y="148" text-anchor="middle" font-size="12" fill="#475569">€3/item bridge duty</text>
+        <circle cx="520" cy="110" r="10" fill="#0f766e" />
+        <text x="520" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Nov 2026</text>
+        <text x="520" y="148" text-anchor="middle" font-size="12" fill="#475569">PIDs mandatory</text>
+        <circle cx="680" cy="110" r="10" fill="#0f766e" />
+        <text x="680" y="78" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Jul 2028</text>
+        <text x="680" y="148" text-anchor="middle" font-size="12" fill="#475569">Customs Data Hub</text>
+      </svg>
+    </figure>
+  )
+}
+
+{
+  slug === 'litbuy-618-shopping-festival-2026-spreadsheet' && (
+    <figure class="blog-diagram" aria-labelledby={captionId}>
+      <figcaption id={captionId} class="blog-diagram__caption">
+        {diagramAlt}
+      </figcaption>
+      <svg class="blog-diagram__svg" viewBox="0 0 800 200" role="img" aria-hidden="true">
+        <rect width="800" height="200" rx="12" fill="#f8fafc" stroke="#e2e8f0" />
+        <rect x="35" y="70" width="110" height="60" rx="8" fill="#0f766e" fill-opacity="0.12" stroke="#0f766e" />
+        <text x="90" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Intake thresholds</text>
+        <rect x="195" y="70" width="110" height="60" rx="8" fill="#0f766e" fill-opacity="0.12" stroke="#0f766e" />
+        <text x="250" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Wave A ship-first</text>
+        <rect x="355" y="70" width="110" height="60" rx="8" fill="#ff1e6f" fill-opacity="0.12" stroke="#ff1e6f" />
+        <text x="410" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">QC pass/fail</text>
+        <rect x="515" y="70" width="110" height="60" rx="8" fill="#0f766e" fill-opacity="0.12" stroke="#0f766e" />
+        <text x="570" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Wave B consolidate</text>
+        <rect x="675" y="70" width="110" height="60" rx="8" fill="#0f766e" fill-opacity="0.12" stroke="#0f766e" />
+        <text x="730" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="#0f172a">Freight model</text>
+      </svg>
+    </figure>
+  )
+}
+
+{
+  slug === 'litbuy-spreadsheet-qc' && (
+    <figure class="blog-diagram" aria-labelledby={captionId}>
+      <figcaption id={captionId} class="blog-diagram__caption">
+        {diagramAlt}
+      </figcaption>
+      <svg class="blog-diagram__svg" viewBox="0 0 800 180" role="img" aria-hidden="true">
+        <rect width="800" height="180" rx="12" fill="#f8fafc" stroke="#e2e8f0" />
+        <rect x="30" y="50" width="140" height="70" rx="8" fill="#fff" stroke="#0f766e" />
+        <text x="100" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Photos in</text>
+        <text x="100" y="102" text-anchor="middle" font-size="11" fill="#64748b">Review angles</text>
+        <rect x="230" y="50" width="140" height="70" rx="8" fill="#fff" stroke="#0f766e" />
+        <text x="300" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Pass/fail</text>
+        <text x="300" y="102" text-anchor="middle" font-size="11" fill="#64748b">Per attribute</text>
+        <rect x="430" y="50" width="140" height="70" rx="8" fill="#fff" stroke="#0f766e" />
+        <text x="500" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Exchange?</text>
+        <text x="500" y="102" text-anchor="middle" font-size="11" fill="#64748b">Domestic only</text>
+        <rect x="630" y="50" width="140" height="70" rx="8" fill="#fff" stroke="#0f766e" />
+        <text x="700" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Approve ship</text>
+        <text x="700" y="102" text-anchor="middle" font-size="11" fill="#64748b">International</text>
+      </svg>
+    </figure>
+  )
+}
+
+{
+  slug === 'spreadsheet-volumetric-chargeable-weight-basics' && (
+    <figure class="blog-diagram" aria-labelledby={captionId}>
+      <figcaption id={captionId} class="blog-diagram__caption">
+        {diagramAlt}
+      </figcaption>
+      <svg class="blog-diagram__svg" viewBox="0 0 800 200" role="img" aria-hidden="true">
+        <rect width="800" height="200" rx="12" fill="#f8fafc" stroke="#e2e8f0" />
+        <text x="400" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">
+          Volumetric kg = L × W × H ÷ divisor (carrier-specific)
+        </text>
+        <rect x="120" y="70" width="220" height="90" rx="8" fill="#fff" stroke="#0f766e" />
+        <text x="230" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Actual weight</text>
+        <rect x="460" y="70" width="220" height="90" rx="8" fill="#fff" stroke="#ff1e6f" />
+        <text x="570" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Volumetric weight</text>
+        <text x="400" y="185" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">
+          Bill the higher value — model both in your spreadsheet
+        </text>
+      </svg>
+    </figure>
+  )
+}
+
+{
+  slug === 'litbuy-customs-declared-value-primer' && (
+    <figure class="blog-diagram" aria-labelledby={captionId}>
+      <figcaption id={captionId} class="blog-diagram__caption">
+        {diagramAlt}
+      </figcaption>
+      <svg class="blog-diagram__svg" viewBox="0 0 800 160" role="img" aria-hidden="true">
+        <rect width="800" height="160" rx="12" fill="#f8fafc" stroke="#e2e8f0" />
+        <rect x="40" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="94" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Item CNY</text>
+        <rect x="162" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="216" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Domestic share</text>
+        <rect x="284" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="338" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">FX note</text>
+        <rect x="406" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="460" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Declared EUR</text>
+        <rect x="528" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="582" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Duty line</text>
+        <rect x="650" y="50" width="108" height="70" rx="6" fill="#fff" stroke="#cbd5e1" />
+        <text x="704" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">Freight</text>
+      </svg>
+    </figure>
+  )
+}
+
+<style>
+  .blog-diagram {
+    margin: 1.5rem 0 1.75rem;
+    max-width: 48rem;
+  }
+
+  .blog-diagram__caption {
+    margin: 0 0 0.5rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  .blog-diagram__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.55rem;
+  }
+</style>

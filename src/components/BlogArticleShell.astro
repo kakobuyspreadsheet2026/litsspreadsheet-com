@@ -6,9 +6,17 @@ import SiteHeader from './SiteHeader.astro';
 import SiteFooter from './SiteFooter.astro';
 import BlogEndCta from './BlogEndCta.astro';
 import BlogCatalogCrossLinks from './BlogCatalogCrossLinks.astro';
+import RelatedBlogPosts from './RelatedBlogPosts.astro';
+import BlogArticleDiagram from './blog/BlogArticleDiagram.astro';
 import { getBlogCatalogCategories } from '../lib/blogCatalogCrossLinkMap';
+import {
+  blogHasDiagram,
+  blogHeroAlt,
+  getBlogHeroImagePath,
+  getBlogOgImagePath,
+} from '../lib/blogImages';
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { defaultOgImagePath, siteStructuredDataIds, siteOrigin } from '../consts';
+import { siteStructuredDataIds, siteOrigin } from '../consts';
 import { HTML_LANG_BY_ROUTE } from '../i18n/config';
 import { breadcrumbListLd } from '../lib/breadcrumbSchema';
 
@@ -20,9 +28,9 @@ interface Props {
   publishedISO: string;
   modifiedISO?: string;
   displayDate: string;
-  ogImage?: string;
   structuredKeywords?: readonly string[];
   articleAuthor?: string;
+  slug: string;
 }
 
 const {
@@ -33,9 +41,9 @@ const {
   publishedISO,
   modifiedISO,
   displayDate,
-  ogImage,
   structuredKeywords,
   articleAuthor,
+  slug,
 } = Astro.props;
 
 const modifiedIsoEffective = modifiedISO ?? publishedISO;
@@ -47,12 +55,10 @@ const homeHref = getRelativeLocaleUrl(locale, '');
 const origin = Astro.site?.origin ?? siteOrigin;
 const { organizationId, websiteId } = siteStructuredDataIds(origin);
 const pageUrl = absoluteCanonicalUrl(canonicalPath, Astro.site);
-const shareImageUrl =
-  ogImage && /^https?:\/\//i.test(ogImage)
-    ? ogImage
-    : ogImage
-      ? new URL(ogImage, Astro.site).href
-      : new URL(defaultOgImagePath, Astro.site).href;
+const ogImagePath = getBlogOgImagePath(slug);
+const heroImagePath = getBlogHeroImagePath(slug);
+const showDiagram = blogHasDiagram(slug);
+const heroAlt = blogHeroAlt(headline);
 
 const articleLd = {
   '@context': 'https://schema.org',
@@ -60,7 +66,7 @@ const articleLd = {
   '@id': `${pageUrl}#article`,
   url: pageUrl,
   headline,
-  image: [shareImageUrl],
+  image: [new URL(ogImagePath, Astro.site).href],
   datePublished: publishedISO,
   dateModified: modifiedIsoEffective,
   author: articleAuthor
@@ -96,7 +102,7 @@ const catalogCategories = getBlogCatalogCategories(canonicalPath);
   locale={locale}
   hreflangLocales={['en']}
   hreflangMirrorsCanonical
-  ogImage={ogImage}
+  ogImage={ogImagePath}
   ogType="article"
   articlePublishedTime={publishedISO}
   articleModifiedTime={modifiedIsoEffective}
@@ -140,8 +146,28 @@ const catalogCategories = getBlogCatalogCategories(canonicalPath);
               </div>
             </header>
 
+            {
+              heroImagePath ? (
+                <figure class="blog-hero">
+                  <img
+                    src={heroImagePath}
+                    alt={heroAlt}
+                    width="1200"
+                    height="630"
+                    loading="eager"
+                    decoding="async"
+                  />
+                </figure>
+              ) : null
+            }
+
+            {
+              showDiagram ? <BlogArticleDiagram slug={slug} /> : null
+            }
+
             <div class="blog-body prose-block">
               <slot />
+              <RelatedBlogPosts slug={slug} />
               <BlogCatalogCrossLinks
                 canonicalPath={canonicalPath}
                 categories={catalogCategories}
@@ -222,6 +248,24 @@ const catalogCategories = getBlogCatalogCategories(canonicalPath);
     color: var(--text);
     max-width: 48rem;
   }
+
+  .blog-hero {
+    margin: 0 0 1.25rem;
+    max-width: 48rem;
+    border-radius: 0.65rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(26, 26, 26, 0.06);
+  }
+
+  .blog-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1200 / 630;
+    object-fit: cover;
+  }
+
   .blog-piece {
     max-width: 52rem;
   }

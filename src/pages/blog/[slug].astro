@@ -40,6 +40,7 @@ function formatDisplayDate(iso: string): string {
   publishedISO={post.published}
   displayDate={formatDisplayDate(post.published)}
   structuredKeywords={content.structuredKeywords}
+  slug={post.slug}
 >
   <p class="blog-lede" slot="lede" set:html={content.ledeHtml} />
   <div set:html={content.bodyHtml} />

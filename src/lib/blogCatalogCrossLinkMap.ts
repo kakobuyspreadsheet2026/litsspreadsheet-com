@@ -19,6 +19,18 @@ const SPREADSHEET_GUIDE_SLUGS = new Set<string>([
   'litbuy-declared-value-practice-before-eu-july-2026',
   'litbuy-eu-july-1-countdown-checklist-2026',
   'litbuy-eu-customs-reform-live-july-1-2026',
+  'eu-customs-reform-july-2026-litbuy-spreadsheet',
+  'litbuy-eu-ioss-vs-customs-duty-june-2026',
+  'litbuy-eu-cn-code-duty-modeling-spreadsheet',
+  'litbuy-eu-ship-before-july-1-cutoff-guide',
+  'litbuy-eu-reform-eve-june-30-2026',
+  'litbuy-618-shopping-festival-2026-spreadsheet',
+  'litbuy-post-618-haul-review-playbook',
+  'litbuy-spreadsheet-browse-navigation-guide',
+  'litbuy-spreadsheet-brands-catalog-2026',
+  'ai-search-discovery-litbuy-spreadsheet-reps',
+  'litbuy-mid-year-spreadsheet-budget-reset-2026',
+  'timing-the-reps-hype-cycle-spreadsheets',
 ]);
 
 const HOW_TO_BUY_SLUGS = new Set<string>([
@@ -30,6 +42,20 @@ const HOW_TO_BUY_SLUGS = new Set<string>([
   'litbuy-parcel-consolidation-split-decision-guide',
   'litbuy-summer-warehouse-qc-checklist-2026',
   'litbuy-rehearsal-packaging-june-2026-update',
+  'litbuy-rehearsal-packaging-freight',
+  'litbuy-dragon-boat-festival-2026-agent-forwarding',
+  'litbuy-domestic-shipping-618-backlog-basics',
+  'litbuy-post-618-warehouse-intake-june-2026',
+  'litbuy-618-tail-logistics-sf-june-2026',
+  'litbuy-no-presale-618-order-timing-2026',
+  'litbuy-warehouse-hold-vs-ship-eu-june-2026',
+  'litbuy-customs-declared-value-primer',
+  'litbuy-shorts-tops-summer-spreadsheet-lane-2026',
+  'litbuy-sandals-slides-summer-lane-2026',
+  'china-public-holidays-agent-forwarding-2026',
+  'litbuy-first-haul-budget-planner-2026',
+  'litbuy-sizing-spreadsheet-apparel',
+  'litbuy-spreadsheet-qc',
 ]);
 
 export const BLOG_HUB_LINK_LABELS: Record<BlogHubLinkKind, string> = {

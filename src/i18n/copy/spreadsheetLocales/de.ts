@@ -147,19 +147,19 @@ Neu beim Einfügen von Links? Starte mit <a href="{howToUrl}">So kaufen</a>.`,
   resourceCards: [
     {
       title: 'Links Schritt für Schritt einfügen',
-      bodyHtml: `Neu im Workflow? Unsere <a href="/how-to-buy/">So kaufen</a>-Seite führt durch URL-Kopieren, Bestellungen und Warehouse-QC.`,
+      bodyHtml: `Neu im Workflow? Unsere <a href="{howToUrl}">So kaufen</a>-Seite führt durch URL-Kopieren, Bestellungen und Warehouse-QC.`,
     },
     {
       title: 'News und LitBuy-Updates',
-      bodyHtml: `Richtlinienänderungen, Versandtipps und Hub-Ankündigungen findest du unter <a href="/news/">News &amp; Anleitungen</a>.`,
+      bodyHtml: `Richtlinienänderungen, Versandtipps und Hub-Ankündigungen findest du unter <a href="{newsUrl}">News &amp; Anleitungen</a>.`,
     },
     {
       title: 'Über diesen Spreadsheet-Hub',
-      bodyHtml: `Erfahre auf unserer <a href="/about/">Über uns</a>-Seite, wie litsspreadsheet.com zu LitBuy und Drittmarktplätzen steht.`,
+      bodyHtml: `Erfahre auf unserer <a href="{aboutUrl}">Über uns</a>-Seite, wie litsspreadsheet.com zu LitBuy und Drittmarktplätzen steht.`,
     },
     {
       title: 'QC-Checkliste vor dem Export',
-      bodyHtml: `Vor der Paketfreigabe die QC-Schritte in <a href="/how-to-buy/">So kaufen</a> wiederholen—Fotos vergrößern und früh anfechten.`,
+      bodyHtml: `Vor der Paketfreigabe die QC-Schritte in <a href="{howToUrl}">So kaufen</a> wiederholen—Fotos vergrößern und früh anfechten.`,
     },
   ],
   marketplaceBridgeTitle: 'Taobao-, Weidian- und 1688-Links',
@@ -167,15 +167,15 @@ Neu beim Einfügen von Links? Starte mit <a href="{howToUrl}">So kaufen</a>.`,
   marketplaceBridgeCards: [
     {
       title: 'Taobao-Listings',
-      bodyHtml: `Die meisten Footwear- und Apparel-Zeilen nutzen Taobao. Variantenraster und Größentabellen vor dem Einfügen prüfen—Details in <a href="/how-to-buy/">So kaufen</a>.`,
+      bodyHtml: `Die meisten Footwear- und Apparel-Zeilen nutzen Taobao. Variantenraster und Größentabellen vor dem Einfügen prüfen—Details in <a href="{howToUrl}">So kaufen</a>.`,
     },
     {
       title: 'Weidian-Shops',
-      bodyHtml: `Weidian-Verkäufer aktualisieren Alben häufig. Frische Artikellinks kopieren, keine veralteten Thumbnails. Tipps unter <a href="/news/">News &amp; Anleitungen</a>.`,
+      bodyHtml: `Weidian-Verkäufer aktualisieren Alben häufig. Frische Artikellinks kopieren, keine veralteten Thumbnails. Tipps unter <a href="{newsUrl}">News &amp; Anleitungen</a>.`,
     },
     {
       title: '1688-Wholesale-Zeilen',
-      bodyHtml: `Bulk-Listings können Mindestbestellmengen haben. MOQ und Lane-Beschränkungen vor der Bestellung via <a href="/how-to-buy/">So kaufen</a> prüfen.`,
+      bodyHtml: `Bulk-Listings können Mindestbestellmengen haben. MOQ und Lane-Beschränkungen vor der Bestellung via <a href="{howToUrl}">So kaufen</a> prüfen.`,
     },
   ],
   faqTitle: 'FAQ',

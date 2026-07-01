@@ -5,6 +5,7 @@ import SiteFooter from './SiteFooter.astro';
 import HotProductsGrid from './HotProductsGrid.astro';
 import HomeCategoryBanners from './HomeCategoryBanners.astro';
 import { defaultCommunityRedditUrl, litbuyCheckoutUrl, ml } from '../consts';
+import { blogThumbAlt, getBlogOgImagePath } from '../lib/blogImages';
 import { homeCategoryBannersWithHrefs } from '../lib/homeCategoryBannersWithHrefs';
 import { litrepstarCategoryUrl } from '../lib/categorySlugMapping';
 import { getRecentBlogPosts } from '../lib/recentBlogPosts';
@@ -150,15 +151,26 @@ const hubIntro = getHomeHubIntroCopy(locale);
                       recentBlogPosts.map((post, bi) => (
                         <li class="home-recent-blog__item">
                           <a class="home-recent-blog__link" href={`/blog/${post.slug}/`}>
-                            <span class="home-recent-blog__title-line">
-                              <span class="home-recent-blog__title">{post.title}</span>
-                              {bi < 3 ? (
-                                <span class="home-feed-new-badge" aria-hidden="true">{blogRecent.newBadge}</span>
-                              ) : null}
+                            <img
+                              class="home-recent-blog__thumb"
+                              src={getBlogOgImagePath(post.slug)}
+                              alt={blogThumbAlt(post.title)}
+                              width="120"
+                              height="63"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                            <span class="home-recent-blog__text">
+                              <span class="home-recent-blog__title-line">
+                                <span class="home-recent-blog__title">{post.title}</span>
+                                {bi < 3 ? (
+                                  <span class="home-feed-new-badge" aria-hidden="true">{blogRecent.newBadge}</span>
+                                ) : null}
+                              </span>
+                              <time class="home-recent-blog__date" datetime={post.published}>
+                                {formatIsoDate(post.published)}
+                              </time>
                             </span>
-                            <time class="home-recent-blog__date" datetime={post.published}>
-                              {formatIsoDate(post.published)}
-                            </time>
                           </a>
                         </li>
                       ))
@@ -633,7 +645,39 @@ const hubIntro = getHomeHubIntroCopy(locale);
     border-bottom: none;
   }
 
-  .home-recent-blog__link,
+  .home-recent-blog__link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.72rem 0.15rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 0.35rem;
+    margin-inline: -0.15rem;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .home-recent-blog__thumb {
+    flex-shrink: 0;
+    width: 72px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 0.35rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .home-recent-blog__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
   .home-recent-buyer-shares__link {
     display: flex;
     flex-direction: column;
